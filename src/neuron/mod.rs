@@ -9,9 +9,13 @@ use crate::prelude::*;
 ## Notes
 an axon of a neuron can be connected to its own dendrite. This is called an autapses.
 
+
+Neurons regulate their own excitability, but are told where to grow their axons to
+
 "#]
 pub struct Neuron {
     axon: Axon,
+    soma: Soma,
     dendrites: Vec<Dendrite>,
 }
 
@@ -19,6 +23,7 @@ impl Default for Neuron {
     fn default() -> Self {
         Self {
             axon: Axon::default(),
+            soma: Soma::default(),
             dendrites: Vec::new(),
         }
     }
