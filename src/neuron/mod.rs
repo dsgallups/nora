@@ -50,7 +50,9 @@ fn make_default_neuron() {
 }
 
 #[test]
-fn make_two_neurons() {
-    let n1 = Neuron::default();
-    let n2 = Neuron::default();
+fn attach_two_neurons() {
+    let sender = Neuron::default();
+    let receiver = Neuron::default();
+
+    sender.attach_to(&receiver)
 }

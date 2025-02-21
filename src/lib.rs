@@ -4,6 +4,8 @@
 pub mod glial;
 pub mod neuron;
 
+pub mod junction;
+
 pub struct Brain {}
 
 pub mod prelude {
