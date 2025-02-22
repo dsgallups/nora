@@ -19,6 +19,12 @@ pub struct Axon {
     connections: Vec<Dendrite>,
 }
 
+impl Axon {
+    pub fn attach_to(&mut self, dendritic_receptor: &Dendrite) {
+        self.connections.push(dendritic_receptor.clone())
+    }
+}
+
 #[derive(Clone, Copy, PartialEq, Eq, Hash)]
 pub struct AxonId(Uuid);
 

@@ -6,9 +6,11 @@ pub mod neuron;
 
 pub mod junction;
 
-pub struct Brain {}
+pub mod brain;
 
 pub mod prelude {
+    pub use crate::brain::*;
+    pub use crate::junction::*;
     pub use crate::neuron::axon::*;
     pub use crate::neuron::dendrite::*;
     pub use crate::neuron::soma::*;

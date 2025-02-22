@@ -2,6 +2,8 @@ pub mod axon;
 pub mod dendrite;
 pub mod soma;
 
+use rand::{rng, seq::IndexedRandom};
+
 use crate::prelude::*;
 
 #[doc = r#"
@@ -38,7 +40,17 @@ impl Neuron {
     pub fn handle_pulses(&mut self) {}
 
     /// axons search/follow queues
-    pub fn attach_to(&mut self, dendritic_receptor: Dendrite) {}
+    pub fn attach_to(&mut self, dendritic_receptor: &Dendrite) {
+        self.axon.attach_to(dendritic_receptor);
+    }
+
+    pub fn random_dendrite(&self) -> Option<&Dendrite> {
+        self.dendrites.choose(&mut rng())
+    }
+
+    pub fn grow_dendrite(&mut self) {
+        self.dendrites.push(Dendrite::default())
+    }
 
     /// axons
     pub fn repulse_from(&mut self, dendritic_receptor: Dendrite) {}
@@ -51,8 +63,9 @@ fn make_default_neuron() {
 
 #[test]
 fn attach_two_neurons() {
-    let sender = Neuron::default();
-    let receiver = Neuron::default();
+    let mut sender = Neuron::default();
+    let mut receiver = Neuron::default();
+    receiver.grow_dendrite();
 
-    sender.attach_to(&receiver)
+    sender.attach_to(receiver.random_dendrite().unwrap())
 }

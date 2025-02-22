@@ -7,6 +7,15 @@ pub struct Dendrite {
     inner: Arc<RwLock<DendriteInner>>,
 }
 
+impl Clone for Dendrite {
+    fn clone(&self) -> Self {
+        Dendrite {
+            id: self.id,
+            inner: Arc::clone(&self.inner),
+        }
+    }
+}
+
 impl Default for Dendrite {
     fn default() -> Self {
         Self {
