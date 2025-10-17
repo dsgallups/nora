@@ -1,8 +1,8 @@
-use std::sync::{Arc, RwLock};
+use std::fmt;
 
-use uuid::Uuid;
+use trotcast::Channel;
 
-use crate::prelude::Dendrite;
+use crate::prelude::{NeuronChannel, NeuronRx};
 
 #[doc = r#"
 
@@ -14,38 +14,23 @@ Assumption is that this is a result of the medium (electricity) and
 doesn't necessarily have intrinsic value that can't be expressed otherwise.
 "#]
 pub struct Axon {
-    id: AxonId,
-    connections: Vec<Dendrite>,
+    name: String,
+}
+impl fmt::Debug for Axon {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        f.debug_struct("Axon").field("name", &self.name).finish()
+    }
 }
 
 impl Axon {
-    pub fn attach_to(&mut self, dendritic_receptor: &Dendrite) {
-        self.connections.push(dendritic_receptor.clone())
-    }
-}
-
-#[derive(Clone, Copy, PartialEq, Eq, Hash)]
-pub struct AxonId(Uuid);
-
-impl Default for AxonId {
-    fn default() -> Self {
-        Self(Uuid::new_v4())
-    }
-}
-
-impl Default for Axon {
-    fn default() -> Self {
+    pub fn new(name: impl Into<String>) -> Self {
+        let channel = Channel::new(20);
         Self {
-            id: AxonId::default(),
-            connections: Vec::new(),
+            name: name.into(),
+            channel,
         }
     }
-}
-
-struct AxonInner;
-
-impl Default for AxonInner {
-    fn default() -> Self {
-        Self
+    pub fn spawn_rx(&self) -> NeuronRx {
+        self.channel.spawn_rx()
     }
 }

@@ -1,48 +1,24 @@
-use std::sync::{Arc, RwLock};
+use std::fmt;
 
-use uuid::Uuid;
+use crate::prelude::NeuronRx;
 
 pub struct Dendrite {
-    id: DendriteId,
-    inner: Arc<RwLock<DendriteInner>>,
+    name: String,
+    rx: NeuronRx,
 }
-
-impl Clone for Dendrite {
-    fn clone(&self) -> Self {
-        Dendrite {
-            id: self.id,
-            inner: Arc::clone(&self.inner),
-        }
+impl fmt::Debug for Dendrite {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        f.debug_struct("Dendrite")
+            .field("name", &self.name)
+            .finish()
     }
 }
 
-impl Default for Dendrite {
-    fn default() -> Self {
+impl Dendrite {
+    pub fn new(name: impl Into<String>, rx: NeuronRx) -> Self {
         Self {
-            id: DendriteId::default(),
-            inner: Arc::new(RwLock::new(DendriteInner::default())),
-        }
-    }
-}
-
-#[derive(Copy, Clone, PartialEq, Eq, Hash)]
-pub struct DendriteId(Uuid);
-
-impl Default for DendriteId {
-    fn default() -> Self {
-        Self(Uuid::new_v4())
-    }
-}
-
-struct DendriteInner {
-    /// If its attached axon has fired
-    incoming_action_potential: bool,
-}
-
-impl Default for DendriteInner {
-    fn default() -> Self {
-        Self {
-            incoming_action_potential: false,
+            name: name.into(),
+            rx,
         }
     }
 }
