@@ -9,7 +9,7 @@ pub use dendrite::*;
 
 mod soma;
 pub use soma::*;
-use tracing::info;
+
 use uuid::Uuid;
 
 use crate::prelude::*;
@@ -78,14 +78,21 @@ impl Neuron {
     ///
     /// todo: optimize with iterator that takes a reference to self
     pub fn update_dendrites(&mut self) -> Vec<(Uuid, i32)> {
-        let updates = self
-            .dendrites
-            .iter_mut()
-            .map(|dendrite| {
-                let potential = dendrite.read_potential() as i32;
-                (dendrite.id(), potential)
-            })
-            .collect::<Vec<_>>();
+        let mut updates = Vec::with_capacity(self.dendrites.len());
+
+        let mut remove_indice = None;
+        for (i, dendrite) in self.dendrites.iter_mut().enumerate() {
+            match dendrite.read_potential() {
+                Ok(potential) => updates.push((dendrite.id(), potential as i32)),
+                Err(_) => {
+                    remove_indice = Some(i);
+                }
+            }
+        }
+        if let Some(i) = remove_indice {
+            self.dendrites.swap_remove(i);
+        }
+
         self.frame_potential = updates.iter().fold(0, |acc, (_, val)| acc + val);
         updates
     }
@@ -104,17 +111,18 @@ impl Neuron {
     }
 
     pub fn update(&mut self) {
-        let mut ap = 0;
+        todo!()
+        // let mut ap = 0;
 
-        info!("\t{} - Update", self.name);
-        for dendrite in &mut self.dendrites {
-            ap += dendrite.read_potential();
-        }
-        if ap as i32 > self.sensitization {
-            info!("\t{} - Firing", self.name);
-            _ = self.fire(1);
-        }
+        // info!("\t{} - Update", self.name);
+        // for dendrite in &mut self.dendrites {
+        //     ap += dendrite.read_potential();
+        // }
+        // if ap as i32 > self.sensitization {
+        //     info!("\t{} - Firing", self.name);
+        //     _ = self.fire(1);
+        // }
 
-        info!("\t{} - End", self.name);
+        // info!("\t{} - End", self.name);
     }
 }

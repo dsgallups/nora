@@ -1,6 +1,7 @@
 use std::fmt;
 
 use tracing::info;
+use trotcast::error::TryRecvError;
 use uuid::Uuid;
 
 use crate::prelude::{Neuron, NeuronRx};
@@ -18,6 +19,9 @@ impl fmt::Debug for Dendrite {
             .finish()
     }
 }
+
+#[derive(Debug, Clone, Copy)]
+pub struct Disconnected;
 
 impl Dendrite {
     pub fn new(name: impl Into<String>, neuron: &Neuron) -> Self {
@@ -41,16 +45,16 @@ impl Dendrite {
         self.connected_to
     }
 
-    pub fn read_potential(&mut self) -> u8 {
+    pub fn read_potential(&mut self) -> Result<u8, Disconnected> {
         match self.rx.try_recv() {
             Ok(val) => {
                 info!("\t{} - Received {val}", self.name);
-                val
+                Ok(val)
             }
-            Err(_) => {
-                //todo
-                0
-            }
+            Err(err) => match err {
+                TryRecvError::Disconnected => Err(Disconnected),
+                _ => Ok(0),
+            },
         }
     }
 }

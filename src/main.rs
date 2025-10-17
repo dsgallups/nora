@@ -1,4 +1,5 @@
 pub mod brain;
+pub mod camera;
 pub mod ui;
 pub mod visual;
 pub mod widgets;
@@ -16,7 +17,7 @@ fn main() {
         ..default()
     }));
 
-    app.add_plugins((brain::plugin, visual::plugin, ui::plugin));
+    app.add_plugins((brain::plugin, visual::plugin, ui::plugin, camera::plugin));
 
     app.run();
 }

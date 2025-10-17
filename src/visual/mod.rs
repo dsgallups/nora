@@ -16,13 +16,9 @@ pub struct GraphComponent;
 
 pub(super) fn plugin(app: &mut App) {
     app.add_plugins((edge::plugin, node::plugin));
-    app.add_systems(Startup, setup);
     app.add_observer(respawn_visualization);
 }
 
-fn setup(mut commands: Commands) {
-    commands.spawn((Camera2d, Transform::from_xyz(0., 0., 5.)));
-}
 #[derive(Event)]
 pub struct RespawnVisualization;
 

@@ -25,6 +25,11 @@ pub(super) fn plugin(app: &mut App) {
 }
 
 fn setup(mut commands: Commands) {
+    commands.insert_resource(Nora::new(default_brain()));
+    commands.trigger(RespawnVisualization);
+}
+
+pub fn default_brain() -> Brain {
     let mut neuron_1 = Neuron::new("N1");
     let mut neuron_2 = Neuron::new("N2");
     let mut neuron_3 = Neuron::new("N3");
@@ -39,6 +44,5 @@ fn setup(mut commands: Commands) {
     brain.add(neuron_1);
     brain.add(neuron_2);
     brain.add(neuron_3);
-    commands.insert_resource(Nora::new(brain));
-    commands.trigger(RespawnVisualization);
+    brain
 }
