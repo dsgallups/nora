@@ -1,6 +1,8 @@
 use bevy::prelude::*;
 use nora_core::prelude::*;
 
+use crate::AppState;
+
 #[derive(Resource)]
 pub struct Nora {
     brain: Brain,
@@ -20,6 +22,7 @@ impl Nora {
 
 pub(super) fn plugin(app: &mut App) {
     app.add_systems(Startup, setup);
+    app.add_observer(update_state);
 }
 
 fn setup(mut commands: Commands) {
@@ -38,4 +41,11 @@ fn setup(mut commands: Commands) {
     brain.add(neuron_2);
     brain.add(neuron_3);
     commands.insert_resource(Nora::new(brain));
+    commands.trigger(SetLoading);
+}
+#[derive(Event)]
+struct SetLoading;
+
+fn update_state(_: On<SetLoading>, mut state: ResMut<NextState<AppState>>) {
+    state.set(AppState::Loading);
 }
