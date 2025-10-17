@@ -1,3 +1,4 @@
+/// A number that can interface with a neuron
 pub struct NumJunction {
     value: i32,
 }

@@ -1,24 +1,24 @@
 {
   "main": {
-    "id": "6624f8661fc57662",
+    "id": "9ff349d369cfec2c",
     "type": "split",
     "children": [
       {
-        "id": "86f1d67985683212",
+        "id": "7ed7bba3a1698b2f",
         "type": "tabs",
         "children": [
           {
-            "id": "6ee3437454ac80bc",
+            "id": "3ee9d5b859995d6d",
             "type": "leaf",
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Scratch.md",
+                "file": "README.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Scratch"
+              "title": "README"
             }
           }
         ]
@@ -27,15 +27,15 @@
     "direction": "vertical"
   },
   "left": {
-    "id": "32bec56384d85618",
+    "id": "20bebf444e473a08",
     "type": "split",
     "children": [
       {
-        "id": "f61e3c69313a8dc6",
+        "id": "6d35a1df9cb5f0e3",
         "type": "tabs",
         "children": [
           {
-            "id": "3368cc6e3ecf714c",
+            "id": "4432653ca5ba224a",
             "type": "leaf",
             "state": {
               "type": "file-explorer",
@@ -48,7 +48,7 @@
             }
           },
           {
-            "id": "b734de10cbe0ce36",
+            "id": "085448c7f1e03fae",
             "type": "leaf",
             "state": {
               "type": "search",
@@ -65,7 +65,7 @@
             }
           },
           {
-            "id": "0565b6f51759a568",
+            "id": "748d26157204914b",
             "type": "leaf",
             "state": {
               "type": "bookmarks",
@@ -81,20 +81,20 @@
     "width": 300
   },
   "right": {
-    "id": "cabfa58663287634",
+    "id": "f6b435ca71ca75f6",
     "type": "split",
     "children": [
       {
-        "id": "8faf7aceb15b7df9",
+        "id": "44b4ecc297532efd",
         "type": "tabs",
         "children": [
           {
-            "id": "c83cccc913354cd0",
+            "id": "a9223e85762274ef",
             "type": "leaf",
             "state": {
               "type": "backlink",
               "state": {
-                "file": "Scratch.md",
+                "file": "README.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -104,25 +104,25 @@
                 "unlinkedCollapsed": true
               },
               "icon": "links-coming-in",
-              "title": "Backlinks for Scratch"
+              "title": "Backlinks for README"
             }
           },
           {
-            "id": "c35a4b8542b44e75",
+            "id": "f750706710caf4b2",
             "type": "leaf",
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "Scratch.md",
+                "file": "README.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               },
               "icon": "links-going-out",
-              "title": "Outgoing links from Scratch"
+              "title": "Outgoing links from README"
             }
           },
           {
-            "id": "0b1ac626092e9b8c",
+            "id": "7ae086f4af503fde",
             "type": "leaf",
             "state": {
               "type": "tag",
@@ -137,18 +137,18 @@
             }
           },
           {
-            "id": "babd56415cd302df",
+            "id": "092a076aa9594ef7",
             "type": "leaf",
             "state": {
               "type": "outline",
               "state": {
-                "file": "Scratch.md",
+                "file": "README.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "Outline of Scratch"
+              "title": "Outline of README"
             }
           }
         ]
@@ -168,9 +168,18 @@
       "command-palette:Open command palette": false
     }
   },
-  "active": "6ee3437454ac80bc",
+  "active": "4432653ca5ba224a",
   "lastOpenFiles": [
-    "Welcome.md",
-    "Scratch.md"
+    "target/debug/incremental/nora-0g5bygcmh28qy/s-h5wmz80521-1nzsaeb-working/dep-graph.part.bin",
+    "target/debug/incremental/nora-0g5bygcmh28qy/s-h5wmz80521-1nzsaeb-working",
+    "target/debug/incremental/run-09hkjca7nzdwc/s-h5wmz80521-0uq3p1h-working/dep-graph.part.bin",
+    "target/debug/incremental/run-09hkjca7nzdwc/s-h5wmz80521-0uq3p1h-working",
+    "target/debug/incremental/nora-3jwmd2rf5f520/s-h5wmz80520-1jfq7e4-working/dep-graph.part.bin",
+    "target/debug/incremental/nora-3jwmd2rf5f520/s-h5wmz80520-1jfq7e4-working",
+    "target/debug/incremental/nora-0g5bygcmh28qy/s-h5wmz80521-1nzsaeb.lock",
+    "target/debug/incremental/run-09hkjca7nzdwc/s-h5wmz80521-0uq3p1h.lock",
+    "target/debug/incremental/nora-3jwmd2rf5f520/s-h5wmz80520-1jfq7e4.lock",
+    "target/debug/incremental/nora-07qj5cev63rq8/s-h5wmz7ze9w-0p1bk1k-e7mzjromcbjpxc10tkpfp5v6g/work-products.bin",
+    "target/debug/incremental/nora-07qj5cev63rq8/s-h5wmz7ze9w-0p1bk1k-e7mzjromcbjpxc10tkpfp5v6g/query-cache.bin"
   ]
 }

@@ -1,7 +1,7 @@
 use nora::prelude::*;
 
 fn main() {
-    let mut brain = Brain::default();
+    let mut brain = Brain::sandbox();
 
     let input = NumJunction::new(2);
     let output = NumJunction::new(0);

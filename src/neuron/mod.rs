@@ -48,8 +48,9 @@ impl Neuron {
         self.dendrites.choose(&mut rng())
     }
 
-    pub fn grow_dendrite(&mut self) {
-        self.dendrites.push(Dendrite::default())
+    pub fn grow_dendrite(&mut self) -> &Dendrite {
+        self.dendrites.push(Dendrite::default());
+        self.dendrites.last().unwrap()
     }
 
     /// axons
