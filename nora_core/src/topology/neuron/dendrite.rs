@@ -1,11 +1,14 @@
 use std::fmt;
 
 use tracing::info;
+use uuid::Uuid;
 
-use crate::prelude::NeuronRx;
+use crate::prelude::{Axon, Neuron, NeuronRx};
 
 pub struct Dendrite {
+    id: Uuid,
     name: String,
+    connected_to: Uuid,
     rx: NeuronRx,
 }
 impl fmt::Debug for Dendrite {
@@ -17,10 +20,12 @@ impl fmt::Debug for Dendrite {
 }
 
 impl Dendrite {
-    pub fn new(name: impl Into<String>, rx: NeuronRx) -> Self {
+    pub fn new(name: impl Into<String>, neuron: &Neuron) -> Self {
         Self {
+            id: Uuid::new_v4(),
             name: name.into(),
-            rx,
+            connected_to: neuron.id(),
+            rx: neuron.spawn_rx(),
         }
     }
     pub fn read_potential(&mut self) -> u8 {
