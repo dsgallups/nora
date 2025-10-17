@@ -1,15 +1,15 @@
-mod line;
-pub use line::*;
+mod edge;
+pub use edge::*;
 
 mod node;
 pub use node::*;
 
-use bevy::{asset::uuid::Uuid, platform::collections::HashMap, prelude::*};
+use bevy::{platform::collections::HashMap, prelude::*};
 
 use crate::{AppState, brain::Nora};
 
 pub(super) fn plugin(app: &mut App) {
-    app.add_plugins((line::plugin, node::plugin));
+    app.add_plugins((edge::plugin, node::plugin));
     app.add_systems(Startup, setup);
     app.add_systems(OnEnter(AppState::Loading), spawn_visualization);
 }
@@ -56,16 +56,22 @@ fn spawn_visualization(
     for neuron in brain.neurons() {
         let neuron_e = map.get(&neuron.id()).unwrap();
 
+        let mut lines = Vec::new();
+
         for dendrite in neuron.dendrites() {
             let connected_to = dendrite.connected_to();
             let receives_from = map.get(&connected_to).unwrap();
 
-            commands.spawn((
-                Line::new(*receives_from, *neuron_e),
-                Mesh2d(meshes.add(Rectangle::new(LINE_MESH_W, LINE_MESH_H))),
-                MeshMaterial2d(materials.add(Color::WHITE)),
-                Transform::default(),
-            ));
+            let line = commands
+                .spawn((
+                    Line::new(*receives_from, *neuron_e),
+                    Mesh2d(meshes.add(Rectangle::new(LINE_MESH_W, LINE_MESH_H))),
+                    MeshMaterial2d(materials.add(Color::WHITE)),
+                    Transform::default(),
+                ))
+                .id();
+            lines.push(line);
         }
+        commands.entity(*neuron_e).insert(Edges::new(lines));
     }
 }
