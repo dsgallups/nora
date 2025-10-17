@@ -8,6 +8,7 @@ dev = []
 
 [dependencies]
 bevy = "0.17.2"
+uuid.workspace = true
 nora_core.workspace = true
 
 [dev-dependencies]
@@ -51,3 +52,4 @@ members = ["nora_core"]
 
 [workspace.dependencies]
 nora_core = {path = "nora_core"}
+uuid = { version = "1.10", features = ["rng", "serde", "v4"] }

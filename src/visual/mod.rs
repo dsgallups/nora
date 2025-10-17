@@ -1,33 +1,21 @@
+mod line;
+pub use line::*;
+
+mod node;
+pub use node::*;
+
 use bevy::{asset::uuid::Uuid, platform::collections::HashMap, prelude::*};
 
 use crate::{AppState, brain::Nora};
 
 pub(super) fn plugin(app: &mut App) {
+    app.add_plugins((line::plugin, node::plugin));
     app.add_systems(Startup, setup);
     app.add_systems(OnEnter(AppState::Loading), spawn_visualization);
 }
 
 fn setup(mut commands: Commands) {
     commands.spawn(Camera2d);
-}
-#[derive(Component)]
-pub struct Nid(pub Uuid);
-
-#[derive(Component)]
-pub struct Line {
-    sender: Entity,
-    receiver: Entity,
-}
-impl Line {
-    pub fn new(sender: Entity, receiver: Entity) -> Self {
-        Self { sender, receiver }
-    }
-    pub fn sender(&self) -> Entity {
-        self.sender
-    }
-    pub fn receiver(&self) -> Entity {
-        self.receiver
-    }
 }
 
 fn spawn_visualization(
@@ -74,7 +62,7 @@ fn spawn_visualization(
 
             commands.spawn((
                 Line::new(*receives_from, *neuron_e),
-                Mesh2d(meshes.add(Rectangle::new(1., 1.))),
+                Mesh2d(meshes.add(Rectangle::new(LINE_MESH_W, LINE_MESH_H))),
                 MeshMaterial2d(materials.add(Color::WHITE)),
                 Transform::default(),
             ));
