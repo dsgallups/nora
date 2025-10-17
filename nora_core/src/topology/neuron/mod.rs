@@ -21,6 +21,7 @@ pub struct Neuron {
     id: Uuid,
     name: String,
     axon: NeuronChannel,
+    frame_potential: i32,
     sensitization: i32,
     dendrites: Vec<Dendrite>,
 }
@@ -42,6 +43,7 @@ impl Neuron {
         Self {
             id: Uuid::new_v4(),
             axon: channel,
+            frame_potential: 0,
             name,
             sensitization: 0,
             dendrites: Vec::new(),
@@ -70,6 +72,24 @@ impl Neuron {
 
     pub fn spawn_rx(&self) -> NeuronRx {
         self.axon.spawn_rx()
+    }
+
+    /// returns the potential for this frame.
+    pub fn update_dendrites(&mut self) -> i32 {
+        self.frame_potential = 0;
+        for dendrite in &mut self.dendrites {
+            self.frame_potential += dendrite.read_potential() as i32;
+        }
+        self.frame_potential
+    }
+    /// returns the discharge of the axon.
+    pub fn update_axon(&mut self) -> i32 {
+        if self.frame_potential > self.sensitization {
+            _ = self.fire(1);
+            1
+        } else {
+            0
+        }
     }
 
     pub fn fire(&self, value: u8) -> Result<(), SendError<u8>> {

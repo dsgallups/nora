@@ -20,6 +20,19 @@ impl Brain {
     pub fn add(&mut self, neuron: Neuron) {
         self.neurons.push(neuron);
     }
+    /// dendrites awaiting messages
+    pub fn update_dendrites(&mut self) -> impl Iterator<Item = DendriteMessage> {
+        self.neurons.iter_mut().map(|neuron| DendriteMessage {
+            id: neuron.id(),
+            current_potential: neuron.update_dendrites(),
+        })
+    }
+    pub fn update_axons(&mut self) -> impl Iterator<Item = AxonMessage> {
+        self.neurons.iter_mut().map(|neuron| AxonMessage {
+            id: neuron.id(),
+            discharge: neuron.update_axon(),
+        })
+    }
 
     pub fn update(&mut self) {
         info!("{} - RUNNING UPDATE SCHEDULE", self.name);
@@ -51,4 +64,16 @@ fn simple_brain() {
     brain.add(neuron_2);
 
     brain.update();
+}
+
+#[derive(Clone, Copy)]
+pub struct DendriteMessage {
+    pub id: Uuid,
+    pub current_potential: i32,
+}
+
+#[derive(Clone, Copy)]
+pub struct AxonMessage {
+    pub id: Uuid,
+    pub discharge: i32,
 }

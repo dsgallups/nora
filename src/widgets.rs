@@ -2,7 +2,7 @@ use bevy::{ecs::system::IntoObserverSystem, prelude::*};
 
 pub fn button<O, E, B, M>(text: impl Into<String>, observer: O) -> impl Bundle
 where
-    O: IntoObserverSystem<E, B, M> + Send + Sync,
+    O: IntoObserverSystem<E, B, M>,
     E: EntityEvent,
     B: Bundle,
 {
