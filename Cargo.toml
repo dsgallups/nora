@@ -6,14 +6,7 @@ edition = "2024"
 [features]
 
 [dependencies]
-tracing = "0.1"
-tracing-subscriber = { version = "0.3" }
-rand = "0.9"
-rayon = "1.10"
-uuid = { version = "1.10", features = ["rng", "serde", "v4"] }
-fnv = "1.0.7"
-burn = { version = "0.17.1", features = ["ndarray", "cuda", "wgpu"] }
-trotcast = "0.4.0"
+nora_core.workspace = true
 
 [dev-dependencies]
 pretty_assertions = "1.4.1"
@@ -24,3 +17,12 @@ lto = "fat"
 codegen-units = 1
 strip = true
 panic = "abort"
+
+
+[workspace]
+resolver = "3"
+members = ["nora_core"]
+
+
+[workspace.dependencies]
+nora_core = {path = "nora_core"}

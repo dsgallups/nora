@@ -1,4 +1,4 @@
-use nora::prelude::*;
+use nora_core::prelude::*;
 fn main() {
     subscribe();
     let mut neuron_1 = Neuron::new("N1");
