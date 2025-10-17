@@ -65,6 +65,10 @@ impl Brain {
     }
     pub fn cleanup(&mut self) {
         self.neurons.retain(|neuron| !neuron.dendrites().is_empty());
+
+        for neuron in &mut self.neurons {
+            neuron.dendrites.retain(|dendrite| !dendrite.is_dead());
+        }
     }
 
     pub fn update(&mut self) {
@@ -84,7 +88,17 @@ impl Brain {
         self.neurons.iter_mut().find(|n| n.id() == id)
     }
 
+    pub fn get_dendrite(&self, id: Uuid) -> Option<&Dendrite> {
+        self.neurons
+            .iter()
+            .find_map(|n| n.dendrites().iter().find(|d| d.id() == id))
+    }
+
     pub fn add_neuron(&mut self) {
+        if self.neurons.is_empty() {
+            *self = Brain::sandbox();
+        }
+
         let num_neurons = self.neurons.len();
         let max_iter = self.neurons.len().min(2);
 

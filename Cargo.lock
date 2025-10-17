@@ -7524,9 +7524,9 @@ dependencies = [
 
 [[package]]
 name = "trotcast"
-version = "0.4.0"
+version = "0.5.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "8dfe9e4ad08332bc2a4231130639575d3eeb85fd42856971b3fb60c99a05c996"
+checksum = "61e0ceee0e2fa8cfed894a7d5663c4c4c4f4dda5ff436fc030300becccd701d3"
 dependencies = [
  "spin 0.10.0",
 ]

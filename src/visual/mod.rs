@@ -15,20 +15,22 @@ const NODE_LAYER: f32 = 1.;
 const EDGE_LAYER: f32 = 0.;
 
 #[derive(Resource, Default)]
-pub struct EntityGraphMap(BiMap<Entity, Uuid>);
+pub struct EntityGraphMap {
+    entity_map: BiMap<Entity, Uuid>,
+}
 
 impl EntityGraphMap {
     pub fn insert(&mut self, entity: Entity, id: Uuid) {
-        self.0.insert(entity, id);
+        self.entity_map.insert(entity, id);
     }
     pub fn get_uuid(&self, entity: &Entity) -> Option<&Uuid> {
-        self.0.get_by_left(entity)
+        self.entity_map.get_by_left(entity)
     }
     pub fn get_entity(&self, uuid: &Uuid) -> Option<&Entity> {
-        self.0.get_by_right(uuid)
+        self.entity_map.get_by_right(uuid)
     }
     fn remove(&mut self, entity: &Entity) {
-        self.0.remove_by_left(entity);
+        self.entity_map.remove_by_left(entity);
     }
 }
 
@@ -81,28 +83,32 @@ fn spawn_new_nodes(
     }
 
     for neuron in brain.neurons() {
-        let neuron_e = map.get_entity(&neuron.id()).unwrap();
+        let neuron_e = *map.get_entity(&neuron.id()).unwrap();
 
-        let mut lines = Vec::new();
+        let mut new_edges = Vec::new();
 
         for dendrite in neuron.dendrites() {
-            let connected_to = dendrite.connected_to();
-            let Some(receives_from) = map.get_entity(&connected_to) else {
-                continue;
-            };
+            if map.get_entity(&dendrite.id()).is_none() {
+                let connected_to = dendrite.connected_to();
+                let Some(receives_from) = map.get_entity(&connected_to) else {
+                    continue;
+                };
 
-            let line = commands
-                .spawn((
-                    GraphComponent,
-                    Edge::new(dendrite.id(), *receives_from, *neuron_e),
-                    Mesh2d(meshes.add(Rectangle::new(LINE_MESH_X, LINE_MESH_Y))),
-                    MeshMaterial2d(materials.add(Color::WHITE)),
-                    Transform::from_xyz(0., 0., EDGE_LAYER),
-                ))
-                .id();
-            lines.push(line);
+                let edge = commands
+                    .spawn((
+                        GraphComponent,
+                        Edge::new(dendrite.id(), *receives_from, neuron_e),
+                        Mesh2d(meshes.add(Rectangle::new(LINE_MESH_X, LINE_MESH_Y))),
+                        MeshMaterial2d(materials.add(Color::WHITE)),
+                        Transform::from_xyz(0., 0., EDGE_LAYER),
+                    ))
+                    .id();
+
+                map.insert(edge, dendrite.id());
+
+                new_edges.push(edge);
+            }
         }
-        commands.entity(*neuron_e).insert(Edges::new(lines));
     }
 
     //
@@ -123,9 +129,15 @@ fn despawn_dead_nodes(
     }
 }
 
-fn despawn_dead_edges(mut commands: Commands, edges: Query<(Entity, &Edge)>, anything: Query<()>) {
+fn despawn_dead_edges(
+    mut commands: Commands,
+    edges: Query<(Entity, &Edge)>,
+    nora: Res<Nora>,
+    mut map: ResMut<EntityGraphMap>,
+) {
     for (entity, edge) in edges {
-        if anything.get(edge.sender()).is_err() || anything.get(edge.receiver()).is_err() {
+        if nora.brain().get_dendrite(edge.id()).is_none() {
+            map.remove(&entity);
             commands.entity(entity).despawn();
         }
     }

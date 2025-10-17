@@ -1,18 +1,21 @@
 use bevy::{color::palettes::tailwind::RED_400, platform::collections::HashMap, prelude::*};
 use uuid::Uuid;
 
-use crate::visual::Edge;
+use crate::visual::{Edge, EntityGraphMap};
 
 #[derive(Component, Reflect)]
 pub struct Nid(pub Uuid);
 
-#[derive(Component, Reflect)]
-pub struct Edges(Vec<Entity>);
-impl Edges {
-    pub fn new(lines: Vec<Entity>) -> Self {
-        Self(lines)
-    }
-}
+// #[derive(Component, Reflect)]
+// pub struct Edges(Vec<Entity>);
+// impl Edges {
+//     pub fn new(edges: Vec<Entity>) -> Self {
+//         Self(edges)
+//     }
+//     pub fn extend(&mut self, edges: impl IntoIterator<Item = Entity>) {
+//         self.0.extend(edges);
+//     }
+// }
 
 pub(super) fn plugin(app: &mut App) {
     app.add_systems(Update, (space_out_nodes, update_node_colors));
@@ -50,38 +53,27 @@ struct LineInfo {
 }
 
 struct NodeLocationMap {
-    inner: HashMap<Uuid, (Vec2, Entity)>,
+    inner: HashMap<Uuid, Vec2>,
     lines: Vec<LineInfo>,
 }
 
 impl NodeLocationMap {
-    fn set_current(&mut self, node_id: Uuid, loc: Vec2, entity: Entity) {
+    fn set_current(&mut self, node_id: Uuid, loc: Vec2) {
         /*
         if there is a value in inner, and the entity was just added,
         do not set the value.
         if there was no value in inner, set the value.
         */
-        let (old_loc, old_entity) = self.inner.entry(node_id).or_insert((loc, entity));
-        if entity == *old_entity {
-            *old_loc = loc;
-        } else {
-            *old_entity = entity;
-        }
+        self.inner.insert(node_id, loc);
 
         //self.inner.insert(node_id, (loc, e));
     }
 
-    fn set_edges<'a>(
-        &mut self,
-        edges: impl IntoIterator<Item = &'a Edge>,
-        map: &HashMap<Entity, Uuid>,
-    ) {
+    fn set_edges<'a>(&mut self, edges: impl IntoIterator<Item = (&'a Uuid, &'a Uuid)>) {
         self.lines.clear();
-        for edge in edges {
-            let sender = map.get(&edge.sender()).unwrap();
-            let (sender_loc, _) = self.inner.get(sender).unwrap();
-            let recv = map.get(&edge.receiver()).unwrap();
-            let (recv_loc, _) = self.inner.get(recv).unwrap();
+        for (sender, recv) in edges {
+            let sender_loc = self.inner.get(sender).unwrap();
+            let recv_loc = self.inner.get(recv).unwrap();
             let length = (*recv_loc - *sender_loc).length();
             self.lines.push(LineInfo {
                 n1: *sender,
@@ -94,7 +86,7 @@ impl NodeLocationMap {
     }
 
     fn space(&mut self) {
-        let mut vect = self.inner.iter().map(|v| (*v.0, v.1.0)).collect::<Vec<_>>();
+        let mut vect = self.inner.iter().map(|v| (*v.0, *v.1)).collect::<Vec<_>>();
         let len = vect.len();
 
         let mut neighbors: Vec<Vec2> = Vec::with_capacity(len / 2);
@@ -119,7 +111,7 @@ impl NodeLocationMap {
             }
             let distance = node_loc.distance(closest_neighbor_loc);
             if distance < MIN_DISTANCE {
-                let add = (node_loc - closest_neighbor_loc).normalize_or_zero();
+                let add = (node_loc - closest_neighbor_loc).normalize_or(Vec2::X);
                 vect[i].1 += add;
                 continue;
             }
@@ -144,24 +136,24 @@ impl NodeLocationMap {
                 let closest = *a + t * ab;
                 let diff = closest - node_loc;
                 let dist_sq = diff.length_squared();
-                if dist_sq < NODE_RADIUS * 6. && dist_sq < diff_squared {
+                if dist_sq < NODE_RADIUS * 12. && dist_sq < diff_squared {
                     closest_neighbor_loc = closest;
                 }
                 let distance = node_loc.distance(closest_neighbor_loc);
                 if distance < MIN_DISTANCE {
-                    let add = (node_loc - closest_neighbor_loc).normalize_or_zero();
+                    let add = (node_loc - closest_neighbor_loc).normalize_or(Vec2::X);
                     vect[i].1 += add;
                 }
             }
         }
         for (e, loc) in vect {
             let v = self.inner.get_mut(&e).unwrap();
-            v.0 = loc;
+            *v = loc;
         }
     }
 
-    fn iter(&self) -> impl Iterator<Item = (&Entity, &Vec2)> {
-        self.inner.values().map(|(e, v)| (v, e))
+    fn iter(&self) -> impl Iterator<Item = (&Uuid, &Vec2)> {
+        self.inner.iter()
     }
 }
 impl Default for NodeLocationMap {
@@ -174,25 +166,31 @@ impl Default for NodeLocationMap {
 }
 
 fn space_out_nodes(
-    nodes: Query<(Entity, Ref<Nid>, &Edges)>,
-    mut transforms: Query<&mut Transform, (With<Edges>, Without<Edge>)>,
+    nodes: Query<(Entity, &Nid)>,
+    mut transforms: Query<&mut Transform, Without<Edge>>,
     edges: Query<&Edge>,
     mut map: Local<NodeLocationMap>,
-    mut rev_map: Local<HashMap<Entity, Uuid>>,
+    graph_map: Res<EntityGraphMap>,
 ) {
-    rev_map.clear();
-    for (entity, id, _) in &nodes {
+    for (entity, id) in &nodes {
         let Ok(transform) = transforms.get(entity) else {
             continue;
         };
-        map.set_current(id.0, transform.translation.xy(), entity);
-        rev_map.insert(entity, id.0);
+        map.set_current(id.0, transform.translation.xy());
     }
-    map.set_edges(edges.iter(), &rev_map);
+
+    map.set_edges(edges.iter().filter_map(|edge| {
+        let recv = graph_map.get_uuid(&edge.receiver())?;
+        let send = graph_map.get_uuid(&edge.sender())?;
+        Some((send, recv))
+    }));
 
     map.space();
 
     for (entity, translation) in map.iter() {
+        let Some(entity) = graph_map.get_entity(entity) else {
+            continue;
+        };
         let Ok(mut transform) = transforms.get_mut(*entity) else {
             continue;
         };

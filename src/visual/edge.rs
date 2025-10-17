@@ -1,8 +1,6 @@
 use bevy::{color::palettes::tailwind::RED_400, platform::collections::HashMap, prelude::*};
 use uuid::Uuid;
 
-use crate::visual::Edges;
-
 #[derive(Component, Reflect)]
 pub struct Edge {
     id: Uuid,
@@ -19,6 +17,9 @@ impl Edge {
             id,
             receiver,
         }
+    }
+    pub fn id(&self) -> Uuid {
+        self.id
     }
     pub fn sender(&self) -> Entity {
         self.sender
@@ -51,8 +52,8 @@ pub(super) fn plugin(app: &mut App) {
 }
 
 fn update_edge_transforms(
-    edges: Query<(&mut Transform, &Edge), Without<Edges>>,
-    nodes: Query<&Transform, With<Edges>>,
+    edges: Query<(&mut Transform, &Edge)>,
+    nodes: Query<&Transform, Without<Edge>>,
 ) {
     for (mut transform, edge) in edges {
         if let Ok(sender_trns) = nodes.get(edge.sender())

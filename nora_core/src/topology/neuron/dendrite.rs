@@ -32,6 +32,9 @@ impl Dendrite {
             rx: neuron.spawn_rx(),
         }
     }
+    pub fn is_dead(&self) -> bool {
+        self.rx.closed()
+    }
 
     pub fn id(&self) -> Uuid {
         self.id
