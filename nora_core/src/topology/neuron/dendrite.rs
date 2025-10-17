@@ -3,7 +3,7 @@ use std::fmt;
 use tracing::info;
 use uuid::Uuid;
 
-use crate::prelude::{Axon, Neuron, NeuronRx};
+use crate::prelude::{Neuron, NeuronRx};
 
 pub struct Dendrite {
     id: Uuid,
@@ -28,6 +28,19 @@ impl Dendrite {
             rx: neuron.spawn_rx(),
         }
     }
+
+    pub fn id(&self) -> Uuid {
+        self.id
+    }
+
+    pub fn name(&self) -> &str {
+        &self.name
+    }
+
+    pub fn connected_to(&self) -> Uuid {
+        self.connected_to
+    }
+
     pub fn read_potential(&mut self) -> u8 {
         match self.rx.try_recv() {
             Ok(val) => {

@@ -27,6 +27,9 @@ impl Brain {
         }
         info!("{} - SCHEDULE COMPLETE", self.name);
     }
+    pub fn neurons(&self) -> &[Neuron] {
+        &self.neurons
+    }
 }
 
 #[test]

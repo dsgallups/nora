@@ -18,4 +18,8 @@ fn spawn_visualization(
     mut materials: ResMut<Assets<ColorMaterial>>,
 ) {
     let brain = nora.brain();
+
+    for neuron in brain.neurons() {
+        todo!()
+    }
 }
