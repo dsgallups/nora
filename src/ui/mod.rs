@@ -1,8 +1,9 @@
 use bevy::prelude::*;
+use nora_core::prelude::Brain;
 
 use crate::{
-    brain::{Nora, default_brain},
-    visual::{EdgeUpdates, NodeUpdates, RespawnVisualization},
+    brain::Nora,
+    visual::{EdgeUpdates, NodeUpdates},
     widgets,
 };
 
@@ -35,6 +36,7 @@ fn actions() -> impl Bundle {
         children![
             widgets::button("Next Frame", next_brain_frame),
             widgets::button("Add Neuron", add_neuron),
+            widgets::button("Remove random connection", remove_connection),
             widgets::button("Reset", reset)
         ],
     )
@@ -77,12 +79,14 @@ fn next_brain_frame(
     }
 }
 
-fn add_neuron(_: On<Pointer<Click>>, mut commands: Commands, mut nora: ResMut<Nora>) {
+fn add_neuron(_: On<Pointer<Click>>, mut nora: ResMut<Nora>) {
     nora.brain_mut().add_neuron();
-    commands.trigger(RespawnVisualization);
 }
 
-fn reset(_: On<Pointer<Click>>, mut commands: Commands, mut nora: ResMut<Nora>) {
-    *nora.brain_mut() = default_brain();
-    commands.trigger(RespawnVisualization);
+fn reset(_: On<Pointer<Click>>, mut nora: ResMut<Nora>) {
+    *nora.brain_mut() = Brain::sandbox();
+}
+
+fn remove_connection(_: On<Pointer<Click>>, mut nora: ResMut<Nora>) {
+    nora.brain_mut().remove_random_connection();
 }

@@ -23,7 +23,7 @@ pub struct Neuron {
     axon: NeuronChannel,
     frame_potential: i32,
     sensitization: i32,
-    dendrites: Vec<Dendrite>,
+    pub(super) dendrites: Vec<Dendrite>,
 }
 impl fmt::Debug for Neuron {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {

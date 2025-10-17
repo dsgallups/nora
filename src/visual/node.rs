@@ -144,7 +144,7 @@ impl NodeLocationMap {
                 let closest = *a + t * ab;
                 let diff = closest - node_loc;
                 let dist_sq = diff.length_squared();
-                if dist_sq < NODE_RADIUS * 8. && dist_sq < diff_squared {
+                if dist_sq < NODE_RADIUS * 6. && dist_sq < diff_squared {
                     closest_neighbor_loc = closest;
                 }
                 let distance = node_loc.distance(closest_neighbor_loc);
