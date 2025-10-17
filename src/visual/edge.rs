@@ -1,14 +1,14 @@
 use bevy::prelude::*;
 
 #[derive(Component, Reflect)]
-pub struct Line {
+pub struct Edge {
     sender: Entity,
     receiver: Entity,
 }
 pub const LINE_MESH_W: f32 = 1.;
 pub const LINE_MESH_H: f32 = 1.;
 
-impl Line {
+impl Edge {
     pub fn new(sender: Entity, receiver: Entity) -> Self {
         Self { sender, receiver }
     }

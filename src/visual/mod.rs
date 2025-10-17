@@ -30,6 +30,7 @@ fn spawn_visualization(
     let color = materials.add(Color::WHITE);
 
     let mut x = 0.;
+    let mut y = -20.;
 
     let mut map = HashMap::new();
 
@@ -39,7 +40,7 @@ fn spawn_visualization(
                 Nid(neuron.id()),
                 Mesh2d(circle.clone()),
                 MeshMaterial2d(color.clone()),
-                Transform::from_xyz(x, 0., 0.),
+                Transform::from_xyz(x, y, 0.),
             ))
             .id();
 
@@ -50,7 +51,8 @@ fn spawn_visualization(
             TextColor(Color::BLACK),
             ChildOf(neuron_entity),
         ));
-        x += 70.;
+        x += 12.;
+        y *= -1.;
     }
 
     for neuron in brain.neurons() {
@@ -64,7 +66,7 @@ fn spawn_visualization(
 
             let line = commands
                 .spawn((
-                    Line::new(*receives_from, *neuron_e),
+                    Edge::new(*receives_from, *neuron_e),
                     Mesh2d(meshes.add(Rectangle::new(LINE_MESH_W, LINE_MESH_H))),
                     MeshMaterial2d(materials.add(Color::WHITE)),
                     Transform::default(),
