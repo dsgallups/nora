@@ -15,6 +15,7 @@ doesn't necessarily have intrinsic value that can't be expressed otherwise.
 "#]
 pub struct Axon {
     name: String,
+    channel: NeuronChannel,
 }
 impl fmt::Debug for Axon {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
@@ -32,5 +33,8 @@ impl Axon {
     }
     pub fn spawn_rx(&self) -> NeuronRx {
         self.channel.spawn_rx()
+    }
+    pub fn fire(&self, value: u8) {
+        self.channel.send(value).unwrap();
     }
 }

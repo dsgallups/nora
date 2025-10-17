@@ -4,11 +4,9 @@ version = "0.1.0"
 edition = "2024"
 
 [features]
-# debug = ["dep:tracing", "dep:tracing-subscriber"]
-debug = []
 
 [dependencies]
-tracing = { version = "0.1", features = ["attributes"] }
+tracing = "0.1"
 tracing-subscriber = { version = "0.3" }
 rand = "0.9"
 rayon = "1.10"

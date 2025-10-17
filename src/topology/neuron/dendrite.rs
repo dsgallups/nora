@@ -21,4 +21,7 @@ impl Dendrite {
             rx,
         }
     }
+    pub fn read_potential(&mut self) -> u8 {
+        self.rx.try_recv().unwrap_or(0)
+    }
 }

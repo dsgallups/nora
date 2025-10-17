@@ -7,6 +7,7 @@ pub use dendrite::*;
 
 mod soma;
 pub use soma::*;
+use tracing::info;
 
 use crate::prelude::*;
 
@@ -38,27 +39,16 @@ impl Neuron {
         self.dendrites
             .push(Dendrite::new(format!("{} Dendrite", &self.name), recv))
     }
-}
 
-#[test]
-fn simple_brain() {
-    use crate::prelude::*;
+    pub fn fire(&self, value: u8) {
+        self.axon.fire(value)
+    }
 
-    let mut neuron_1 = Neuron::new("N1");
-    let mut neuron_2 = Neuron::new("N2");
-    let junction = ActionPotential::default();
-
-    neuron_2.tx_to(&mut neuron_1);
-
-    let mut brain = Brain::new("Brain");
-
-    brain.add(&neuron_1);
-    brain.add(&neuron_2);
-    //brain.add(&junction);
-
-    std::thread::spawn(move || {
-        neuron_2.fire();
-    });
-
-    brain.run();
+    pub fn update(&mut self) {
+        let mut ap = 0;
+        for dendrite in &mut self.dendrites {
+            ap += dendrite.read_potential();
+        }
+        info!("{} AP: {ap}", self.name);
+    }
 }
