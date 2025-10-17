@@ -40,7 +40,7 @@ fn respawn_visualization(
 
     let brain = nora.brain();
 
-    let circle = meshes.add(Circle::new(20.));
+    let circle = meshes.add(Circle::new(NODE_RADIUS));
 
     let mut x = 0.;
     let mut y = -20.;

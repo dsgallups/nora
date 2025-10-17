@@ -37,37 +37,80 @@ impl NodeUpdates {
     }
 }
 
+pub const NODE_RADIUS: f32 = 20.;
+
 const MIN_DISTANCE: f32 = 140.;
 
 struct NodeLocationMap {
-    inner: HashMap<Entity, Vec2>,
+    inner: HashMap<Uuid, (Vec2, Entity)>,
 }
 
 impl NodeLocationMap {
-    fn set_current(&mut self, entity: Entity, loc: Vec2) {
-        self.inner.insert(entity, loc);
+    fn set_current(&mut self, node_id: Uuid, loc: Vec2, entity: Entity) {
+        /*
+        if there is a value in inner, and the entity was just added,
+        do not set the value.
+        if there was no value in inner, set the value.
+        */
+        let (old_loc, old_entity) = self.inner.entry(node_id).or_insert((loc, entity));
+        if entity == *old_entity {
+            *old_loc = loc;
+        } else {
+            *old_entity = entity;
+        }
+
+        //self.inner.insert(node_id, (loc, e));
     }
 
-    fn space(&mut self, node_1: Entity, node_2: Entity) {
-        let mut node_1_trns = *self.inner.get(&node_1).unwrap();
-        let node_2_trns = *self.inner.get(&node_2).unwrap();
-        //
-        let distance = node_1_trns.distance(node_2_trns);
-        if distance < MIN_DISTANCE {
-            let additional_distance = MIN_DISTANCE - distance;
+    fn set_edges(&mut self, edges: impl IntoIterator<Item = &Edge>) {
+        todo!()
+    }
 
-            let add = (node_1_trns - node_2_trns).normalize_or_zero() * additional_distance;
+    fn space(&mut self) {
+        let mut vect = self.inner.iter().map(|v| (*v.0, v.1.0)).collect::<Vec<_>>();
+        let len = vect.len();
 
-            node_1_trns += add;
+        let mut neighbors: Vec<Vec2> = Vec::with_capacity(len / 2);
 
-            //todo
+        for i in 0..len {
+            neighbors.clear();
+            let (node, node_loc) = vect[i];
+
+            let (mut closest_neighbor, mut closest_neighbor_loc, mut diff_squared) =
+                (node, &node_loc, f32::MAX);
+
+            for (neighbor, neighbor_loc) in vect.iter() {
+                if node == *neighbor {
+                    continue;
+                }
+
+                let ds = node_loc.distance_squared(*neighbor_loc);
+
+                if ds < diff_squared {
+                    closest_neighbor = *neighbor;
+                    closest_neighbor_loc = neighbor_loc;
+                    diff_squared = ds;
+                }
+            }
+
+            if node == closest_neighbor {
+                continue;
+            }
+            let distance = node_loc.distance(*closest_neighbor_loc);
+            if distance < MIN_DISTANCE {
+                let add = (node_loc - closest_neighbor_loc).normalize_or_zero();
+
+                vect[i].1 += add;
+            }
         }
-        let trns = self.inner.get_mut(&node_1).unwrap();
-        *trns = node_1_trns;
+        for (e, loc) in vect {
+            let v = self.inner.get_mut(&e).unwrap();
+            v.0 = loc;
+        }
     }
 
     fn iter(&self) -> impl Iterator<Item = (&Entity, &Vec2)> {
-        self.inner.iter()
+        self.inner.values().map(|(e, v)| (v, e))
     }
 }
 impl Default for NodeLocationMap {
@@ -79,25 +122,20 @@ impl Default for NodeLocationMap {
 }
 
 fn space_out_nodes(
-    nodes: Query<(Entity, &Edges)>,
+    nodes: Query<(Entity, Ref<Nid>, &Edges)>,
     mut transforms: Query<&mut Transform, (With<Edges>, Without<Edge>)>,
     edges: Query<&Edge>,
     mut map: Local<NodeLocationMap>,
 ) {
-    for (entity, _) in &nodes {
+    for (entity, id, _) in &nodes {
         let Ok(transform) = transforms.get(entity) else {
             continue;
         };
-        map.set_current(entity, transform.translation.xy());
+        map.set_current(id.0, transform.translation.xy(), entity);
     }
 
-    for (_, node_edges) in &nodes {
-        for edge in &node_edges.0 {
-            let edge = edges.get(*edge).unwrap();
+    map.space();
 
-            map.space(edge.sender(), edge.receiver());
-        }
-    }
     for (entity, translation) in map.iter() {
         let Ok(mut transform) = transforms.get_mut(*entity) else {
             continue;
