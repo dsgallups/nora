@@ -1,6 +1,6 @@
 use std::fmt;
 
-use trotcast::Channel;
+use trotcast::{Channel, error::SendError};
 
 use crate::prelude::{NeuronChannel, NeuronRx};
 
@@ -31,10 +31,13 @@ impl Axon {
             channel,
         }
     }
+    pub fn name(&self) -> &str {
+        &self.name
+    }
     pub fn spawn_rx(&self) -> NeuronRx {
         self.channel.spawn_rx()
     }
-    pub fn fire(&self, value: u8) {
-        self.channel.send(value).unwrap();
+    pub fn fire(&self, value: u8) -> Result<(), SendError<u8>> {
+        self.channel.send(value)
     }
 }

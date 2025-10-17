@@ -21,10 +21,11 @@ impl Brain {
     }
 
     pub fn update(&mut self) {
-        info!("RUNNING UPDATE SCHEDULE");
+        info!("{} - RUNNING UPDATE SCHEDULE", self.name);
         for neuron in &mut self.neurons {
             neuron.update()
         }
+        info!("{} - SCHEDULE COMPLETE", self.name);
     }
 }
 
@@ -35,7 +36,7 @@ fn simple_brain() {
     //let junction = ActionPotential::default();
 
     neuron_2.tx_to(&mut neuron_1);
-    neuron_2.fire(1);
+    neuron_2.fire(1).unwrap();
 
     let mut brain = Brain::new("Brain");
 

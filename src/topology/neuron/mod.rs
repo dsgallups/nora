@@ -18,6 +18,7 @@ pub type NeuronRx = Receiver<u8>;
 pub struct Neuron {
     name: String,
     axon: Axon,
+    sensitization: i32,
     dendrites: Vec<Dendrite>,
 }
 
@@ -27,6 +28,7 @@ impl Neuron {
         Self {
             axon: Axon::new(format!("{name} Axon")),
             name,
+            sensitization: 0,
             dendrites: Vec::new(),
         }
     }
@@ -36,19 +38,28 @@ impl Neuron {
     }
     pub fn rx_from(&mut self, axon: &Axon) {
         let recv = axon.spawn_rx();
-        self.dendrites
-            .push(Dendrite::new(format!("{} Dendrite", &self.name), recv))
+        self.dendrites.push(Dendrite::new(
+            format!("{} -> {} Dendrite", &axon.name(), &self.name),
+            recv,
+        ))
     }
 
-    pub fn fire(&self, value: u8) {
+    pub fn fire(&self, value: u8) -> Result<(), SendError<u8>> {
         self.axon.fire(value)
     }
 
     pub fn update(&mut self) {
         let mut ap = 0;
+
+        info!("\t{} - Update", self.name);
         for dendrite in &mut self.dendrites {
             ap += dendrite.read_potential();
         }
-        info!("{} AP: {ap}", self.name);
+        if ap as i32 > self.sensitization {
+            info!("\t{} - Firing", self.name);
+            _ = self.fire(1);
+        }
+
+        info!("\t{} - End", self.name);
     }
 }

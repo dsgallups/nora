@@ -1,5 +1,7 @@
 use std::fmt;
 
+use tracing::info;
+
 use crate::prelude::NeuronRx;
 
 pub struct Dendrite {
@@ -22,6 +24,15 @@ impl Dendrite {
         }
     }
     pub fn read_potential(&mut self) -> u8 {
-        self.rx.try_recv().unwrap_or(0)
+        match self.rx.try_recv() {
+            Ok(val) => {
+                info!("\t{} - Received {val}", self.name);
+                val
+            }
+            Err(_) => {
+                //todo
+                0
+            }
+        }
     }
 }
