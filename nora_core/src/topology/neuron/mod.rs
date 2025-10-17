@@ -63,6 +63,11 @@ impl Neuron {
     pub fn id(&self) -> Uuid {
         self.id
     }
+
+    pub fn dendrites(&self) -> &[Dendrite] {
+        &self.dendrites
+    }
+
     pub fn spawn_rx(&self) -> NeuronRx {
         self.axon.spawn_rx()
     }
