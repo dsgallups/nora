@@ -3,4 +3,25 @@ name = "nora"
 version = "0.1.0"
 edition = "2024"
 
+[features]
+# debug = ["dep:tracing", "dep:tracing-subscriber"]
+debug = []
+
 [dependencies]
+tracing = { version = "0.1", features = ["attributes"] }
+tracing-subscriber = { version = "0.3" }
+rand = "0.9"
+rayon = "1.10"
+uuid = { version = "1.10", features = ["rng", "serde", "v4"] }
+fnv = "1.0.7"
+burn = { version = "0.17.1", features = ["ndarray", "cuda", "wgpu"] }
+
+[dev-dependencies]
+pretty_assertions = "1.4.1"
+
+[profile.release]
+opt-level = 3
+lto = "fat"
+codegen-units = 1
+strip = true
+panic = "abort"
