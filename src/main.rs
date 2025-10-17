@@ -1,5 +1,7 @@
 pub mod brain;
+pub mod ui;
 pub mod visual;
+pub mod widgets;
 
 use bevy::{prelude::*, window::WindowResolution};
 
@@ -23,7 +25,7 @@ fn main() {
     }));
     app.init_state::<AppState>();
 
-    app.add_plugins((brain::plugin, visual::plugin));
+    app.add_plugins((brain::plugin, visual::plugin, ui::plugin));
 
     app.run();
 }
