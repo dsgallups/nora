@@ -1,3 +1,6 @@
+use std::collections::HashSet;
+
+use rand::{Rng, SeedableRng, rngs::StdRng};
 use tracing::info;
 use uuid::Uuid;
 
@@ -6,6 +9,7 @@ use crate::prelude::*;
 #[derive(Debug)]
 pub struct Brain {
     name: String,
+    rng: StdRng,
     neurons: Vec<Neuron>,
 }
 
@@ -13,6 +17,7 @@ impl Brain {
     pub fn new(name: impl Into<String>) -> Self {
         Self {
             name: name.into(),
+            rng: StdRng::seed_from_u64(12829231),
             neurons: Vec::new(),
         }
     }
@@ -53,6 +58,39 @@ impl Brain {
     }
     pub fn get_neuron(&self, id: Uuid) -> &Neuron {
         self.neurons.iter().find(|n| n.id() == id).unwrap()
+    }
+    pub fn get_neuron_mut(&mut self, id: Uuid) -> &mut Neuron {
+        self.neurons.iter_mut().find(|n| n.id() == id).unwrap()
+    }
+
+    pub fn add_neuron(&mut self) {
+        let num_neurons = self.neurons.len();
+
+        let mut sends_to = HashSet::new();
+        let mut recvs_from = HashSet::new();
+
+        for _ in 0..self.rng.random_range(1..num_neurons) {
+            let rand = self.rng.random_range(0..num_neurons);
+            sends_to.insert(self.neurons[rand].id());
+        }
+        for _ in 0..self.rng.random_range(1..num_neurons) {
+            let rand = self.rng.random_range(0..num_neurons);
+            recvs_from.insert(self.neurons[rand].id());
+        }
+
+        let name = format!("N{}", self.neurons.len());
+        let mut new_neuron = Neuron::new(name);
+
+        for receiver in sends_to {
+            let receiver = self.get_neuron_mut(receiver);
+            receiver.rx_from(&new_neuron);
+        }
+        for sender in recvs_from {
+            let sender = self.get_neuron(sender);
+            new_neuron.rx_from(sender);
+        }
+
+        self.neurons.push(new_neuron);
     }
 }
 

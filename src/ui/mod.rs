@@ -2,7 +2,7 @@ use bevy::prelude::*;
 
 use crate::{
     brain::Nora,
-    visual::{EdgeUpdates, NodeUpdates},
+    visual::{EdgeUpdates, NodeUpdates, RespawnVisualization},
     widgets,
 };
 
@@ -32,7 +32,10 @@ fn actions() -> impl Bundle {
             column_gap: px(10.),
             ..default()
         },
-        children![widgets::button("Click", empty)],
+        children![
+            widgets::button("Next Frame", next_brain_frame),
+            widgets::button("Add Neuron", add_neuron)
+        ],
     )
 }
 #[derive(Resource, Default, Clone, Copy)]
@@ -42,7 +45,7 @@ enum BrainState {
     Axon,
 }
 
-fn empty(
+fn next_brain_frame(
     _: On<Pointer<Click>>,
     mut nora: ResMut<Nora>,
     mut brain_state: ResMut<BrainState>,
@@ -71,4 +74,9 @@ fn empty(
             *brain_state = BrainState::Dendrite;
         }
     }
+}
+
+fn add_neuron(_: On<Pointer<Click>>, mut commands: Commands, mut nora: ResMut<Nora>) {
+    nora.brain_mut().add_neuron();
+    commands.trigger(RespawnVisualization);
 }

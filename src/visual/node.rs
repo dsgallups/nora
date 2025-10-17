@@ -85,8 +85,10 @@ fn space_out_nodes(
     mut map: Local<NodeLocationMap>,
 ) {
     for (entity, _) in &nodes {
-        let current_translation = transforms.get(entity).unwrap().translation;
-        map.set_current(entity, current_translation.xy());
+        let Ok(transform) = transforms.get(entity) else {
+            continue;
+        };
+        map.set_current(entity, transform.translation.xy());
     }
 
     for (_, node_edges) in &nodes {
@@ -97,7 +99,9 @@ fn space_out_nodes(
         }
     }
     for (entity, translation) in map.iter() {
-        let mut transform = transforms.get_mut(*entity).unwrap();
+        let Ok(mut transform) = transforms.get_mut(*entity) else {
+            continue;
+        };
         transform.translation.x = translation.x;
         transform.translation.y = translation.y;
     }

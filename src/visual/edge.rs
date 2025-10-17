@@ -55,19 +55,20 @@ fn update_edge_transforms(
     nodes: Query<&Transform, With<Edges>>,
 ) {
     for (mut transform, edge) in edges {
-        let sender_trns = nodes.get(edge.sender()).unwrap().translation;
-        let recv_trns = nodes.get(edge.receiver()).unwrap().translation;
+        if let Ok(sender_trns) = nodes.get(edge.sender())
+            && let Ok(recv_trns) = nodes.get(edge.receiver())
+        {
+            let val = (recv_trns.translation.xy() - sender_trns.translation.xy());
+            let length = val.length();
+            if length > 0. {
+                transform.scale.x = length;
+            }
+            transform.translation = sender_trns.translation + (Vec3::new(val.x, val.y, 0.) * 0.5);
 
-        let val = (recv_trns.xy() - sender_trns.xy());
-        let length = val.length();
-        if length > 0. {
-            transform.scale.x = length;
+            let angle = val.y.atan2(val.x);
+
+            transform.rotation = Quat::from_rotation_z(angle);
         }
-        transform.translation = sender_trns + (Vec3::new(val.x, val.y, 0.) * 0.5);
-
-        let angle = val.y.atan2(val.x);
-
-        transform.rotation = Quat::from_rotation_z(angle);
     }
 }
 

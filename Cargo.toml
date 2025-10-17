@@ -53,3 +53,4 @@ members = ["nora_core"]
 [workspace.dependencies]
 nora_core = {path = "nora_core"}
 uuid = { version = "1.10", features = ["rng", "serde", "v4"] }
+rand = "0.9.2"
