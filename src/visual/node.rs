@@ -40,11 +40,11 @@ impl NodeUpdates {
 const MIN_DISTANCE: f32 = 140.;
 
 struct NodeLocationMap {
-    inner: HashMap<Entity, Vec3>,
+    inner: HashMap<Entity, Vec2>,
 }
 
 impl NodeLocationMap {
-    fn set_current(&mut self, entity: Entity, loc: Vec3) {
+    fn set_current(&mut self, entity: Entity, loc: Vec2) {
         self.inner.insert(entity, loc);
     }
 
@@ -66,7 +66,7 @@ impl NodeLocationMap {
         *trns = node_1_trns;
     }
 
-    fn iter(&self) -> impl Iterator<Item = (&Entity, &Vec3)> {
+    fn iter(&self) -> impl Iterator<Item = (&Entity, &Vec2)> {
         self.inner.iter()
     }
 }
@@ -86,7 +86,7 @@ fn space_out_nodes(
 ) {
     for (entity, _) in &nodes {
         let current_translation = transforms.get(entity).unwrap().translation;
-        map.set_current(entity, current_translation);
+        map.set_current(entity, current_translation.xy());
     }
 
     for (_, node_edges) in &nodes {
@@ -98,7 +98,8 @@ fn space_out_nodes(
     }
     for (entity, translation) in map.iter() {
         let mut transform = transforms.get_mut(*entity).unwrap();
-        transform.translation = *translation;
+        transform.translation.x = translation.x;
+        transform.translation.y = translation.y;
     }
 }
 

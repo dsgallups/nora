@@ -1,11 +1,13 @@
 use bevy::prelude::*;
 
 use crate::{
-    brain::{Nora, UpdateBrain},
+    brain::Nora,
+    visual::{EdgeUpdates, NodeUpdates},
     widgets,
 };
 
 pub(super) fn plugin(app: &mut App) {
+    app.init_resource::<BrainState>();
     app.add_systems(Startup, setup);
 }
 
@@ -33,8 +35,40 @@ fn actions() -> impl Bundle {
         children![widgets::button("Click", empty)],
     )
 }
+#[derive(Resource, Default, Clone, Copy)]
+enum BrainState {
+    #[default]
+    Dendrite,
+    Axon,
+}
 
-fn empty(_: On<Pointer<Click>>, mut commands: Commands) {
-    //info!("Clicked");
-    commands.trigger(UpdateBrain);
+fn empty(
+    _: On<Pointer<Click>>,
+    mut nora: ResMut<Nora>,
+    mut brain_state: ResMut<BrainState>,
+    mut edge_updates: MessageWriter<EdgeUpdates>,
+    mut node_updates: MessageWriter<NodeUpdates>,
+) {
+    match *brain_state {
+        BrainState::Dendrite => {
+            node_updates.write(NodeUpdates::empty());
+            edge_updates.write(EdgeUpdates::set(
+                nora.brain_mut()
+                    .update_dendrites()
+                    .map(|msg| (msg.dendrite_id, msg.current_potential)),
+            ));
+            *brain_state = BrainState::Axon;
+        }
+        BrainState::Axon => {
+            edge_updates.write(EdgeUpdates::empty());
+
+            node_updates.write(NodeUpdates::set(
+                nora.brain_mut()
+                    .update_axons()
+                    .map(|msg| (msg.id, msg.discharge)),
+            ));
+
+            *brain_state = BrainState::Dendrite;
+        }
+    }
 }

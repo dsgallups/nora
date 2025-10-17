@@ -6,24 +6,38 @@ pub use node::*;
 
 use bevy::{platform::collections::HashMap, prelude::*};
 
-use crate::{AppState, brain::Nora};
+use crate::brain::Nora;
+
+const NODE_LAYER: f32 = 1.;
+const EDGE_LAYER: f32 = 0.;
+
+#[derive(Component)]
+pub struct GraphComponent;
 
 pub(super) fn plugin(app: &mut App) {
     app.add_plugins((edge::plugin, node::plugin));
     app.add_systems(Startup, setup);
-    app.add_systems(OnEnter(AppState::Loading), spawn_visualization);
+    app.add_observer(respawn_visualization);
 }
 
 fn setup(mut commands: Commands) {
-    commands.spawn(Camera2d);
+    commands.spawn((Camera2d, Transform::from_xyz(0., 0., 5.)));
 }
+#[derive(Event)]
+pub struct RespawnVisualization;
 
-fn spawn_visualization(
+fn respawn_visualization(
+    _: On<RespawnVisualization>,
     mut commands: Commands,
+    graph_components: Query<Entity, With<GraphComponent>>,
     nora: Res<Nora>,
     mut meshes: ResMut<Assets<Mesh>>,
     mut materials: ResMut<Assets<ColorMaterial>>,
 ) {
+    for entity in graph_components {
+        commands.entity(entity).despawn();
+    }
+
     let brain = nora.brain();
 
     let circle = meshes.add(Circle::new(20.));
@@ -36,10 +50,11 @@ fn spawn_visualization(
     for neuron in brain.neurons() {
         let neuron_entity = commands
             .spawn((
+                GraphComponent,
                 Nid(neuron.id()),
                 Mesh2d(circle.clone()),
                 MeshMaterial2d(materials.add(Color::WHITE)),
-                Transform::from_xyz(x, y, 0.),
+                Transform::from_xyz(x, y, NODE_LAYER),
             ))
             .id();
 
@@ -65,10 +80,11 @@ fn spawn_visualization(
 
             let line = commands
                 .spawn((
+                    GraphComponent,
                     Edge::new(dendrite.id(), *receives_from, *neuron_e),
                     Mesh2d(meshes.add(Rectangle::new(LINE_MESH_X, LINE_MESH_Y))),
                     MeshMaterial2d(materials.add(Color::WHITE)),
-                    Transform::default(),
+                    Transform::from_xyz(0., 0., EDGE_LAYER),
                 ))
                 .id();
             lines.push(line);

@@ -58,12 +58,12 @@ fn update_edge_transforms(
         let sender_trns = nodes.get(edge.sender()).unwrap().translation;
         let recv_trns = nodes.get(edge.receiver()).unwrap().translation;
 
-        let val = (recv_trns - sender_trns);
+        let val = (recv_trns.xy() - sender_trns.xy());
         let length = val.length();
         if length > 0. {
             transform.scale.x = length;
         }
-        transform.translation = sender_trns + (val * 0.5);
+        transform.translation = sender_trns + (Vec3::new(val.x, val.y, 0.) * 0.5);
 
         let angle = val.y.atan2(val.x);
 
