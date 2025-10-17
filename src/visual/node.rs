@@ -41,8 +41,17 @@ pub const NODE_RADIUS: f32 = 20.;
 
 const MIN_DISTANCE: f32 = 140.;
 
+struct LineInfo {
+    n1: Uuid,
+    n2: Uuid,
+    from: Vec2,
+    to: Vec2,
+    length: f32,
+}
+
 struct NodeLocationMap {
     inner: HashMap<Uuid, (Vec2, Entity)>,
+    lines: Vec<LineInfo>,
 }
 
 impl NodeLocationMap {
@@ -62,8 +71,26 @@ impl NodeLocationMap {
         //self.inner.insert(node_id, (loc, e));
     }
 
-    fn set_edges(&mut self, edges: impl IntoIterator<Item = &Edge>) {
-        todo!()
+    fn set_edges<'a>(
+        &mut self,
+        edges: impl IntoIterator<Item = &'a Edge>,
+        map: &HashMap<Entity, Uuid>,
+    ) {
+        self.lines.clear();
+        for edge in edges {
+            let sender = map.get(&edge.sender()).unwrap();
+            let (sender_loc, _) = self.inner.get(sender).unwrap();
+            let recv = map.get(&edge.receiver()).unwrap();
+            let (recv_loc, _) = self.inner.get(recv).unwrap();
+            let length = (*recv_loc - *sender_loc).length();
+            self.lines.push(LineInfo {
+                n1: *sender,
+                n2: *recv,
+                from: *sender_loc,
+                to: *recv_loc,
+                length,
+            });
+        }
     }
 
     fn space(&mut self) {
@@ -76,8 +103,7 @@ impl NodeLocationMap {
             neighbors.clear();
             let (node, node_loc) = vect[i];
 
-            let (mut closest_neighbor, mut closest_neighbor_loc, mut diff_squared) =
-                (node, &node_loc, f32::MAX);
+            let (mut closest_neighbor_loc, mut diff_squared) = (node_loc, f32::MAX);
 
             for (neighbor, neighbor_loc) in vect.iter() {
                 if node == *neighbor {
@@ -87,20 +113,45 @@ impl NodeLocationMap {
                 let ds = node_loc.distance_squared(*neighbor_loc);
 
                 if ds < diff_squared {
-                    closest_neighbor = *neighbor;
-                    closest_neighbor_loc = neighbor_loc;
+                    closest_neighbor_loc = *neighbor_loc;
                     diff_squared = ds;
                 }
             }
-
-            if node == closest_neighbor {
-                continue;
-            }
-            let distance = node_loc.distance(*closest_neighbor_loc);
+            let distance = node_loc.distance(closest_neighbor_loc);
             if distance < MIN_DISTANCE {
                 let add = (node_loc - closest_neighbor_loc).normalize_or_zero();
-
                 vect[i].1 += add;
+                continue;
+            }
+
+            for LineInfo {
+                n1,
+                n2,
+                from: a,
+                to: b,
+                length,
+            } in self.lines.iter()
+            {
+                if &node == n1 || &node == n2 {
+                    continue;
+                }
+                let ab = *b - *a;
+                let ac = node_loc - *a;
+                let t = ac.dot(ab) / ab.dot(ab);
+                if !(0_f32..=*length).contains(&t) {
+                    continue;
+                }
+                let closest = *a + t * ab;
+                let diff = closest - node_loc;
+                let dist_sq = diff.length_squared();
+                if dist_sq < NODE_RADIUS * 8. && dist_sq < diff_squared {
+                    closest_neighbor_loc = closest;
+                }
+                let distance = node_loc.distance(closest_neighbor_loc);
+                if distance < MIN_DISTANCE {
+                    let add = (node_loc - closest_neighbor_loc).normalize_or_zero();
+                    vect[i].1 += add;
+                }
             }
         }
         for (e, loc) in vect {
@@ -117,6 +168,7 @@ impl Default for NodeLocationMap {
     fn default() -> Self {
         Self {
             inner: HashMap::new(),
+            lines: Vec::new(),
         }
     }
 }
@@ -126,13 +178,17 @@ fn space_out_nodes(
     mut transforms: Query<&mut Transform, (With<Edges>, Without<Edge>)>,
     edges: Query<&Edge>,
     mut map: Local<NodeLocationMap>,
+    mut rev_map: Local<HashMap<Entity, Uuid>>,
 ) {
+    rev_map.clear();
     for (entity, id, _) in &nodes {
         let Ok(transform) = transforms.get(entity) else {
             continue;
         };
         map.set_current(id.0, transform.translation.xy(), entity);
+        rev_map.insert(entity, id.0);
     }
+    map.set_edges(edges.iter(), &rev_map);
 
     map.space();
 
