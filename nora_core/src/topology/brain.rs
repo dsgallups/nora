@@ -1,4 +1,5 @@
 use tracing::info;
+use uuid::Uuid;
 
 use crate::prelude::*;
 
@@ -29,6 +30,9 @@ impl Brain {
     }
     pub fn neurons(&self) -> &[Neuron] {
         &self.neurons
+    }
+    pub fn get_neuron(&self, id: Uuid) -> &Neuron {
+        self.neurons.iter().find(|n| n.id() == id).unwrap()
     }
 }
 

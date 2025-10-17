@@ -80,6 +80,5 @@ fn space_out_nodes(
     for (entity, translation) in map.iter() {
         let mut transform = transforms.get_mut(*entity).unwrap();
         transform.translation = *translation;
-        //tod
     }
 }

@@ -64,10 +64,16 @@ fn spawn_visualization(
             let connected_to = dendrite.connected_to();
             let receives_from = map.get(&connected_to).unwrap();
 
+            info!(
+                "{} sends to {}",
+                brain.get_neuron(connected_to).name(),
+                neuron.name(),
+            );
+
             let line = commands
                 .spawn((
                     Edge::new(*receives_from, *neuron_e),
-                    Mesh2d(meshes.add(Rectangle::new(LINE_MESH_W, LINE_MESH_H))),
+                    Mesh2d(meshes.add(Rectangle::new(LINE_MESH_X, LINE_MESH_Y))),
                     MeshMaterial2d(materials.add(Color::WHITE)),
                     Transform::default(),
                 ))
