@@ -27,7 +27,6 @@ fn spawn_visualization(
     let brain = nora.brain();
 
     let circle = meshes.add(Circle::new(20.));
-    let color = materials.add(Color::WHITE);
 
     let mut x = 0.;
     let mut y = -20.;
@@ -39,7 +38,7 @@ fn spawn_visualization(
             .spawn((
                 Nid(neuron.id()),
                 Mesh2d(circle.clone()),
-                MeshMaterial2d(color.clone()),
+                MeshMaterial2d(materials.add(Color::WHITE)),
                 Transform::from_xyz(x, y, 0.),
             ))
             .id();

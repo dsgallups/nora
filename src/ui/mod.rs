@@ -1,6 +1,9 @@
 use bevy::prelude::*;
 
-use crate::{brain::Nora, widgets};
+use crate::{
+    brain::{Nora, UpdateBrain},
+    widgets,
+};
 
 pub(super) fn plugin(app: &mut App) {
     app.add_systems(Startup, setup);
@@ -31,9 +34,7 @@ fn actions() -> impl Bundle {
     )
 }
 
-fn empty(_: On<Pointer<Click>>, mut nora: ResMut<Nora>) {
-    info!("Clicked");
-
-    let brain = nora.brain_mut();
-    brain.update();
+fn empty(_: On<Pointer<Click>>, mut commands: Commands) {
+    //info!("Clicked");
+    commands.trigger(UpdateBrain);
 }

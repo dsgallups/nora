@@ -1,4 +1,4 @@
-use bevy::{platform::collections::HashMap, prelude::*};
+use bevy::{color::palettes::tailwind::RED_400, platform::collections::HashMap, prelude::*};
 use uuid::Uuid;
 
 use crate::visual::Edges;
@@ -46,11 +46,11 @@ impl EdgeUpdates {
 }
 
 pub(super) fn plugin(app: &mut App) {
-    app.add_systems(Update, update_edges);
+    app.add_systems(Update, (update_edge_transforms, update_edge_colors));
     app.add_message::<EdgeUpdates>();
 }
 
-fn update_edges(
+fn update_edge_transforms(
     edges: Query<(&mut Transform, &Edge), Without<Edges>>,
     nodes: Query<&Transform, With<Edges>>,
 ) {
@@ -68,5 +68,30 @@ fn update_edges(
         let angle = val.y.atan2(val.x);
 
         transform.rotation = Quat::from_rotation_z(angle);
+    }
+}
+
+fn update_edge_colors(
+    mut reader: MessageReader<EdgeUpdates>,
+    edges: Query<(&Edge, &MeshMaterial2d<ColorMaterial>)>,
+    mut materials: ResMut<Assets<ColorMaterial>>,
+) {
+    for update in reader.read() {
+        info!("In update edge colors");
+        for (edge, material_handle) in edges {
+            let Some(material) = materials.get_mut(&material_handle.0) else {
+                continue;
+            };
+            let val = update.map.get(&edge.id).copied().unwrap_or_default();
+
+            if val > 0 {
+                info!("COLOR IS RED");
+                material.color = RED_400.into();
+            } else {
+                info!("COLOR IS WHITE");
+                material.color = Color::WHITE;
+            }
+        }
+        //todo
     }
 }

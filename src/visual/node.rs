@@ -1,4 +1,4 @@
-use bevy::{platform::collections::HashMap, prelude::*};
+use bevy::{color::palettes::tailwind::RED_400, platform::collections::HashMap, prelude::*};
 use uuid::Uuid;
 
 use crate::visual::Edge;
@@ -15,7 +15,7 @@ impl Edges {
 }
 
 pub(super) fn plugin(app: &mut App) {
-    app.add_systems(Update, space_out_nodes);
+    app.add_systems(Update, (space_out_nodes, update_node_colors));
 
     app.add_message::<NodeUpdates>();
 }
@@ -99,5 +99,27 @@ fn space_out_nodes(
     for (entity, translation) in map.iter() {
         let mut transform = transforms.get_mut(*entity).unwrap();
         transform.translation = *translation;
+    }
+}
+
+fn update_node_colors(
+    mut reader: MessageReader<NodeUpdates>,
+    nodes: Query<(&Nid, &MeshMaterial2d<ColorMaterial>)>,
+    mut materials: ResMut<Assets<ColorMaterial>>,
+) {
+    for update in reader.read() {
+        for (node, material_handle) in nodes {
+            let Some(material) = materials.get_mut(&material_handle.0) else {
+                continue;
+            };
+            let val = update.map.get(&node.0).copied().unwrap_or_default();
+
+            if val > 0 {
+                material.color = RED_400.into();
+            } else {
+                material.color = Color::WHITE;
+            }
+        }
+        //todo
     }
 }
