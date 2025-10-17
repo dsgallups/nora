@@ -75,12 +75,19 @@ impl Neuron {
     }
 
     /// returns the potential for this frame.
-    pub fn update_dendrites(&mut self) -> i32 {
-        self.frame_potential = 0;
-        for dendrite in &mut self.dendrites {
-            self.frame_potential += dendrite.read_potential() as i32;
-        }
-        self.frame_potential
+    ///
+    /// todo: optimize with iterator that takes a reference to self
+    pub fn update_dendrites(&mut self) -> Vec<(Uuid, i32)> {
+        let updates = self
+            .dendrites
+            .iter_mut()
+            .map(|dendrite| {
+                let potential = dendrite.read_potential() as i32;
+                (dendrite.id(), potential)
+            })
+            .collect::<Vec<_>>();
+        self.frame_potential = updates.iter().fold(0, |acc, (_, val)| acc + val);
+        updates
     }
     /// returns the discharge of the axon.
     pub fn update_axon(&mut self) -> i32 {

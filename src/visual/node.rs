@@ -16,6 +16,25 @@ impl Edges {
 
 pub(super) fn plugin(app: &mut App) {
     app.add_systems(Update, space_out_nodes);
+
+    app.add_message::<NodeUpdates>();
+}
+
+#[derive(Message)]
+pub struct NodeUpdates {
+    map: HashMap<Uuid, i32>,
+}
+impl NodeUpdates {
+    pub fn empty() -> Self {
+        Self {
+            map: HashMap::new(),
+        }
+    }
+    pub fn set(values: impl IntoIterator<Item = (Uuid, i32)>) -> Self {
+        Self {
+            map: values.into_iter().collect(),
+        }
+    }
 }
 
 const MIN_DISTANCE: f32 = 140.;

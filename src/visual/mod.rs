@@ -66,7 +66,7 @@ fn spawn_visualization(
 
             let line = commands
                 .spawn((
-                    Edge::new(*receives_from, *neuron_e),
+                    Edge::new(dendrite.id(), *receives_from, *neuron_e),
                     Mesh2d(meshes.add(Rectangle::new(LINE_MESH_X, LINE_MESH_Y))),
                     MeshMaterial2d(materials.add(Color::WHITE)),
                     Transform::default(),

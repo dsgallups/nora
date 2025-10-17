@@ -22,9 +22,16 @@ impl Brain {
     }
     /// dendrites awaiting messages
     pub fn update_dendrites(&mut self) -> impl Iterator<Item = DendriteMessage> {
-        self.neurons.iter_mut().map(|neuron| DendriteMessage {
-            id: neuron.id(),
-            current_potential: neuron.update_dendrites(),
+        self.neurons.iter_mut().flat_map(|neuron| {
+            let neuron_id = neuron.id();
+            neuron
+                .update_dendrites()
+                .into_iter()
+                .map(move |(dendrite_id, value)| DendriteMessage {
+                    neuron_id,
+                    dendrite_id,
+                    current_potential: value,
+                })
         })
     }
     pub fn update_axons(&mut self) -> impl Iterator<Item = AxonMessage> {
@@ -68,7 +75,8 @@ fn simple_brain() {
 
 #[derive(Clone, Copy)]
 pub struct DendriteMessage {
-    pub id: Uuid,
+    pub neuron_id: Uuid,
+    pub dendrite_id: Uuid,
     pub current_potential: i32,
 }
 

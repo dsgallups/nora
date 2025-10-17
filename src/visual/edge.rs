@@ -1,9 +1,11 @@
-use bevy::prelude::*;
+use bevy::{platform::collections::HashMap, prelude::*};
+use uuid::Uuid;
 
 use crate::visual::Edges;
 
 #[derive(Component, Reflect)]
 pub struct Edge {
+    id: Uuid,
     sender: Entity,
     receiver: Entity,
 }
@@ -11,8 +13,12 @@ pub const LINE_MESH_X: f32 = 1.;
 pub const LINE_MESH_Y: f32 = 2.;
 
 impl Edge {
-    pub fn new(sender: Entity, receiver: Entity) -> Self {
-        Self { sender, receiver }
+    pub fn new(id: Uuid, sender: Entity, receiver: Entity) -> Self {
+        Self {
+            sender,
+            id,
+            receiver,
+        }
     }
     pub fn sender(&self) -> Entity {
         self.sender
@@ -22,8 +28,26 @@ impl Edge {
     }
 }
 
+#[derive(Message)]
+pub struct EdgeUpdates {
+    map: HashMap<Uuid, i32>,
+}
+impl EdgeUpdates {
+    pub fn empty() -> Self {
+        Self {
+            map: HashMap::new(),
+        }
+    }
+    pub fn set(values: impl IntoIterator<Item = (Uuid, i32)>) -> Self {
+        Self {
+            map: values.into_iter().collect(),
+        }
+    }
+}
+
 pub(super) fn plugin(app: &mut App) {
     app.add_systems(Update, update_edges);
+    app.add_message::<EdgeUpdates>();
 }
 
 fn update_edges(
