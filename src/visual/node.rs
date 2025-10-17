@@ -18,7 +18,7 @@ pub(super) fn plugin(app: &mut App) {
     app.add_systems(Update, space_out_nodes);
 }
 
-const MIN_DISTANCE: f32 = 80.;
+const MIN_DISTANCE: f32 = 140.;
 
 struct NodeLocationMap {
     inner: HashMap<Entity, Vec3>,

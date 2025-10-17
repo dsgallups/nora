@@ -64,12 +64,6 @@ fn spawn_visualization(
             let connected_to = dendrite.connected_to();
             let receives_from = map.get(&connected_to).unwrap();
 
-            info!(
-                "{} sends to {}",
-                brain.get_neuron(connected_to).name(),
-                neuron.name(),
-            );
-
             let line = commands
                 .spawn((
                     Edge::new(*receives_from, *neuron_e),
