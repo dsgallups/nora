@@ -1,0 +1,17 @@
+[config]
+default_to_workspace = false
+
+[env]
+TARGET = "x86_64-unknown-linux-gnu"
+BIN = "nora"
+PGO_DIR = "${CARGO_MAKE_WORKING_DIRECTORY}/target/pgo-data"
+PROFDATA_FILE = "${PGO_DIR}/merged.profdata"
+TRAINING_PROFILE = "pgo-step-one"
+TRAINING_OUT_DIR = "${CARGO_MAKE_WORKING_DIRECTORY}/target/${TARGET}/${TRAINING_PROFILE}"
+TRAINING_BIN = "${TRAINING_OUT_DIR}/${BIN}"
+BOLT_BIN = "${ULTRA_BIN}.bolt"
+LLVM_PROFDATA = "$(rustc --print sysroot)/lib/rustlib/$(rustc -vv | grep host | cut -d' ' -f2)/bin/llvm-profdata"
+# dev
+[tasks.dev]
+command = "cargo"
+args = ["run",  "--bin", "${BIN}", "--features", "dev"]

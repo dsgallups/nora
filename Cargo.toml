@@ -4,12 +4,23 @@ version = "0.1.0"
 edition = "2024"
 
 [features]
+dev = []
 
 [dependencies]
+bevy = "0.17.2"
 nora_core.workspace = true
 
 [dev-dependencies]
 pretty_assertions = "1.4.1"
+
+
+[profile.dev]
+opt-level = 1
+panic = "abort"  # drop unwinder
+debug = false
+
+[profile.dev.package."*"]
+opt-level = 3
 
 [profile.release]
 opt-level = 3
@@ -18,11 +29,25 @@ codegen-units = 1
 strip = true
 panic = "abort"
 
+[lints.rust]
+# Mark `bevy_lint` as a valid `cfg`, as it is set when the Bevy linter runs.
+unexpected_cfgs = { level = "warn", check-cfg = ["cfg(bevy_lint)"] }
+unused_parens = "allow"
+
+[lints.clippy]
+# Bevy supplies arguments to systems via dependency injection, so it's natural for systems to
+# request more than 7 arguments, which would undesirably trigger this lint.
+too_many_arguments = "allow"
+# Queries may access many components, which would undesirably trigger this lint.
+type_complexity = "allow"
+# Make sure macros use their standard braces, such as `[]` for `bevy_ecs::children!`.
+nonstandard_macro_braces = "warn"
+double-parens = "allow"
+
 
 [workspace]
 resolver = "3"
 members = ["nora_core"]
-
 
 [workspace.dependencies]
 nora_core = {path = "nora_core"}
