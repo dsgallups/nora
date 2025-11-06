@@ -5165,6 +5165,20 @@ dependencies = [
 ]
 
 [[package]]
+name = "nora_neat"
+version = "0.1.0"
+dependencies = [
+ "burn",
+ "fnv",
+ "pretty_assertions",
+ "rand 0.9.2",
+ "rayon",
+ "tracing",
+ "tracing-subscriber",
+ "uuid",
+]
+
+[[package]]
 name = "ntapi"
 version = "0.4.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
