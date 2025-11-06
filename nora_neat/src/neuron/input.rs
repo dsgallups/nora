@@ -1,3 +1,6 @@
+use std::sync::{Arc, RwLock, Weak};
+
+use crate::prelude::*;
 use rand::Rng;
 
 /// Represents a weighted input connection in a polynomial neural network.
@@ -51,6 +54,16 @@ impl<I> NeuronInput<I> {
     /// Adjusts the exponent by adding the specified delta.
     pub fn adjust_exp(&mut self, by: i32) {
         self.exp += by;
+    }
+}
+
+impl NeuronInput<Topology> {
+    pub fn neuron(&self) -> Option<Arc<RwLock<NeuronTopology>>> {
+        Weak::upgrade(self.input().handle())
+    }
+
+    pub fn downgrade(input: &Arc<RwLock<NeuronTopology>>, weight: f32, exp: i32) -> Self {
+        Self::new(Topology::new(input), weight, exp)
     }
 }
 
