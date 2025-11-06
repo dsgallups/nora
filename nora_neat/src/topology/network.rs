@@ -6,7 +6,7 @@ use std::{
 use rand::Rng;
 use uuid::Uuid;
 
-use crate::{prelude::*, topology::neuron_type::ForNeuronTop};
+use crate::{prelude::*, topology::neuron_type::Topology};
 
 /// Represents the topology (structure) of a polynomial neural network.
 ///
@@ -61,7 +61,7 @@ impl NetworkTopology {
                         let topology_index = rng.random_range(0..input_neurons.len());
                         let input = input_neurons.get(topology_index).unwrap();
                         (
-                            PolyInput::new_rand(ForNeuronTop::new(Arc::downgrade(input)), rng),
+                            PolyInput::new_rand(Topology::new(input), rng),
                             topology_index,
                         )
                     })
@@ -103,7 +103,7 @@ impl NetworkTopology {
 
                 let chosen_inputs = input_neurons
                     .iter()
-                    .map(|input| PolyInput::new_rand(ForNeuronTop::new(Arc::downgrade(input)), rng))
+                    .map(|input| PolyInput::new_rand(Topology::new(input), rng))
                     .collect::<Vec<_>>();
 
                 Arc::new(RwLock::new(NeuronTopology::output(
@@ -303,7 +303,7 @@ impl NetworkTopology {
                 continue;
             };
 
-            let mut cloned_inputs: Vec<PolyInput<ForNeuronTop>> =
+            let mut cloned_inputs: Vec<PolyInput<Topology>> =
                 Vec::with_capacity(og_props.inputs().len());
 
             for og_input in og_props.inputs() {
@@ -313,10 +313,10 @@ impl NetworkTopology {
                         .iter()
                         .position(|n| Arc::ptr_eq(n, &strong_parent))
                 {
-                    let cloned_ident_ref = Arc::downgrade(&new_neurons[index]);
+                    //let cloned_ident_ref = Arc::downgrade();
 
                     let cloned_input_topology = PolyInput::new(
-                        ForNeuronTop::new(cloned_ident_ref),
+                        Topology::new(&new_neurons[index]),
                         og_input.weight(),
                         og_input.exponent(),
                     );
@@ -435,7 +435,7 @@ impl NetworkTopology {
 
                     //add the new hidden node to the list of inputs for the neuron
                     let new_replicant_for_neuron = PolyInput::new(
-                        ForNeuronTop::new(Arc::downgrade(&new_hidden_node)),
+                        Topology::new(&new_hidden_node),
                         Bias::rand(rng),
                         Exponent::rand(rng),
                     );
@@ -460,7 +460,7 @@ impl NetworkTopology {
 
                     if let Some(props) = output_neuron.write().unwrap().props_mut() {
                         let input = PolyInput::new(
-                            ForNeuronTop::new(Arc::downgrade(input_neuron)),
+                            Topology::new(input_neuron),
                             Bias::rand(rng),
                             Exponent::rand(rng),
                         );

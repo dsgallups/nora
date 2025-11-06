@@ -2,7 +2,7 @@ use std::sync::{Arc, RwLock};
 
 use uuid::Uuid;
 
-use crate::{prelude::*, topology::neuron_type::ForNeuronTop};
+use crate::{prelude::*, topology::neuron_type::Topology};
 
 /// This defines a node's topology. What does this mean?
 ///
@@ -12,7 +12,7 @@ use crate::{prelude::*, topology::neuron_type::ForNeuronTop};
 #[derive(Clone, Debug)]
 pub struct NeuronTopology {
     id: Uuid,
-    neuron_props: Option<PolyProps<ForNeuronTop>>,
+    neuron_props: Option<PolyProps<Topology>>,
 }
 
 impl NeuronTopology {
@@ -24,29 +24,29 @@ impl NeuronTopology {
             neuron_props: None,
         }
     }
-    pub fn hidden(id: Uuid, inputs: Vec<PolyInput<ForNeuronTop>>) -> Self {
+    pub fn hidden(id: Uuid, inputs: Vec<PolyInput<Topology>>) -> Self {
         let neuron_type = PolyProps::hidden(inputs);
         Self::new(id, Some(neuron_type))
     }
 
-    pub fn output(id: Uuid, inputs: Vec<PolyInput<ForNeuronTop>>) -> Self {
+    pub fn output(id: Uuid, inputs: Vec<PolyInput<Topology>>) -> Self {
         let neuron_props = PolyProps::output(inputs);
 
         Self::new(id, Some(neuron_props))
     }
 
-    pub fn new(id: Uuid, neuron_props: Option<PolyProps<ForNeuronTop>>) -> Self {
+    pub fn new(id: Uuid, neuron_props: Option<PolyProps<Topology>>) -> Self {
         Self { id, neuron_props }
     }
 
-    pub fn new_arc(id: Uuid, neuron_props: Option<PolyProps<ForNeuronTop>>) -> Arc<RwLock<Self>> {
+    pub fn new_arc(id: Uuid, neuron_props: Option<PolyProps<Topology>>) -> Arc<RwLock<Self>> {
         Arc::new(RwLock::new(Self { id, neuron_props }))
     }
 
-    pub fn props(&self) -> Option<&PolyProps<ForNeuronTop>> {
+    pub fn props(&self) -> Option<&PolyProps<Topology>> {
         self.neuron_props.as_ref()
     }
-    pub fn props_mut(&mut self) -> Option<&mut PolyProps<ForNeuronTop>> {
+    pub fn props_mut(&mut self) -> Option<&mut PolyProps<Topology>> {
         self.neuron_props.as_mut()
     }
 
