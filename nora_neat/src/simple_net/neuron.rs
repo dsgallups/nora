@@ -12,7 +12,7 @@ pub struct SimpleNeuron {
 }
 
 impl SimpleNeuron {
-    pub fn new(id: Uuid, props: Option<NeuronProps>) -> Self {
+    pub fn new(id: Uuid, props: Option<NeuronPropsAlias>) -> Self {
         Self {
             id,
             props,
@@ -20,7 +20,7 @@ impl SimpleNeuron {
         }
     }
 
-    pub fn inputs(&self) -> Option<&[NeuronInput]> {
+    pub fn inputs(&self) -> Option<&[NeuronInputAlias]> {
         self.props.as_ref().map(|props| props.inputs())
     }
 
@@ -28,7 +28,7 @@ impl SimpleNeuron {
         self.id
     }
 
-    pub fn props(&self) -> Option<&NeuronProps> {
+    pub fn props(&self) -> Option<&NeuronPropsAlias> {
         self.props.as_ref()
     }
 

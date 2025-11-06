@@ -25,12 +25,12 @@ impl NeuronTopology {
         }
     }
 
-    pub fn hidden(id: Uuid, inputs: Vec<Input<Topology>>) -> Self {
+    pub fn hidden(id: Uuid, inputs: Vec<NeuronInput<Topology>>) -> Self {
         let neuron_type = PolyProps::hidden(inputs);
         Self::new(id, Some(neuron_type))
     }
 
-    pub fn output(id: Uuid, inputs: Vec<Input<Topology>>) -> Self {
+    pub fn output(id: Uuid, inputs: Vec<NeuronInput<Topology>>) -> Self {
         let neuron_props = PolyProps::output(inputs);
 
         Self::new(id, Some(neuron_props))
@@ -107,7 +107,7 @@ impl NeuronTopology {
                             })
                             .unwrap();
 
-                        new_neuron_inputs.push(NeuronInput::new(
+                        new_neuron_inputs.push(NeuronInputAlias::new(
                             Arc::clone(neuron_in_array),
                             topology_input.weight(),
                             topology_input.exponent(),
@@ -115,7 +115,7 @@ impl NeuronTopology {
                     }
                 }
 
-                Some(NeuronProps::new(
+                Some(NeuronPropsAlias::new(
                     topology_props.props_type(),
                     new_neuron_inputs,
                 ))

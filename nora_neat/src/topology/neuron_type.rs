@@ -18,7 +18,7 @@ impl Topology {
 //pub type PolyNeuronPropsTopology = PolyProps<Weak<RwLock<NeuronTopology>>>;
 
 impl PolyProps<Topology> {
-    pub(super) fn set_inputs(&mut self, new_inputs: Vec<Input<Topology>>) {
+    pub(super) fn set_inputs(&mut self, new_inputs: Vec<NeuronInput<Topology>>) {
         self.inputs = new_inputs;
     }
 
@@ -30,7 +30,7 @@ impl PolyProps<Topology> {
         }
     }
 
-    pub fn add_input(&mut self, input: Input<Topology>) {
+    pub fn add_input(&mut self, input: NeuronInput<Topology>) {
         self.inputs.push(input);
     }
 
@@ -45,7 +45,7 @@ impl PolyProps<Topology> {
     }
 
     /// Returnes the removed input, if it has inputs.
-    pub fn remove_random_input(&mut self, rng: &mut impl Rng) -> Option<Input<Topology>> {
+    pub fn remove_random_input(&mut self, rng: &mut impl Rng) -> Option<NeuronInput<Topology>> {
         if self.inputs.is_empty() {
             return None;
         }
@@ -55,7 +55,10 @@ impl PolyProps<Topology> {
         Some(removed)
     }
 
-    pub fn get_random_input_mut(&mut self, rng: &mut impl Rng) -> Option<&mut Input<Topology>> {
+    pub fn get_random_input_mut(
+        &mut self,
+        rng: &mut impl Rng,
+    ) -> Option<&mut NeuronInput<Topology>> {
         if self.inputs.is_empty() {
             return None;
         }

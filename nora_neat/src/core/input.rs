@@ -7,13 +7,13 @@ use rand::Rng;
 /// - The connection weight
 /// - The exponent applied to the input value
 #[derive(Clone, Debug)]
-pub struct Input<I> {
+pub struct NeuronInput<I> {
     input: I,
     weight: f32,
     exp: i32,
 }
 
-impl<I> Input<I> {
+impl<I> NeuronInput<I> {
     /// Creates a new `PolyInput` with specified parameters.
     pub fn new(input: I, weight: f32, exp: i32) -> Self {
         Self { input, weight, exp }
@@ -62,7 +62,7 @@ mod tests {
 
     #[test]
     fn test_new() {
-        let input = Input::new(42, 0.5, 2);
+        let input = NeuronInput::new(42, 0.5, 2);
         assert_eq!(*input.input(), 42);
         assert_eq!(input.weight(), 0.5);
         assert_eq!(input.exponent(), 2);
@@ -70,7 +70,7 @@ mod tests {
 
     #[test]
     fn test_new_with_negative_weight() {
-        let input = Input::new("test", -0.75, 0);
+        let input = NeuronInput::new("test", -0.75, 0);
         assert_eq!(*input.input(), "test");
         assert_eq!(input.weight(), -0.75);
         assert_eq!(input.exponent(), 0);
@@ -82,7 +82,7 @@ mod tests {
 
         // Test multiple random generations to ensure ranges are respected
         for _ in 0..100 {
-            let input = Input::new_rand(1, &mut rng);
+            let input = NeuronInput::new_rand(1, &mut rng);
             assert!(
                 input.weight() >= -1.0 && input.weight() <= 1.0,
                 "Weight {} should be in range [-1.0, 1.0]",
@@ -105,7 +105,7 @@ mod tests {
         let mut exp_counts = [0; 3]; // For exponents 0, 1, 2
 
         for _ in 0..num_samples {
-            let input = Input::new_rand(1, &mut rng);
+            let input = NeuronInput::new_rand(1, &mut rng);
             weight_sum += input.weight();
             exp_counts[input.exponent() as usize] += 1;
         }
@@ -132,7 +132,7 @@ mod tests {
 
     #[test]
     fn test_adjust_weight() {
-        let mut input = Input::new(1, 0.5, 1);
+        let mut input = NeuronInput::new(1, 0.5, 1);
 
         input.adjust_weight(0.3);
         assert!((input.weight() - 0.8).abs() < f32::EPSILON);
@@ -146,7 +146,7 @@ mod tests {
 
     #[test]
     fn test_adjust_exp() {
-        let mut input = Input::new(1, 0.5, 1);
+        let mut input = NeuronInput::new(1, 0.5, 1);
 
         input.adjust_exp(2);
         assert_eq!(input.exponent(), 3);
@@ -164,7 +164,7 @@ mod tests {
 
     #[test]
     fn test_clone() {
-        let original = Input::new(42, 0.7, 2);
+        let original = NeuronInput::new(42, 0.7, 2);
         let cloned = original.clone();
 
         assert_eq!(*cloned.input(), *original.input());
@@ -174,7 +174,7 @@ mod tests {
 
     #[test]
     fn test_debug_format() {
-        let input = Input::new(123, 0.5, 1);
+        let input = NeuronInput::new(123, 0.5, 1);
         let debug_str = format!("{:?}", input);
 
         assert!(debug_str.contains("PolyInput"));
@@ -190,8 +190,8 @@ mod tests {
         let mut rng2 = StdRng::seed_from_u64(seed);
 
         for i in 0..10 {
-            let input1 = Input::new_rand(i, &mut rng1);
-            let input2 = Input::new_rand(i, &mut rng2);
+            let input1 = NeuronInput::new_rand(i, &mut rng1);
+            let input2 = NeuronInput::new_rand(i, &mut rng2);
 
             assert_eq!(input1.weight(), input2.weight());
             assert_eq!(input1.exponent(), input2.exponent());
@@ -201,7 +201,7 @@ mod tests {
     #[test]
     fn test_polynomial_calculation_example() {
         // Example showing how the polynomial input would be used
-        let input = Input::new(1, 0.5, 2);
+        let input = NeuronInput::new(1, 0.5, 2);
         let input_value = 3.0_f32;
 
         // Calculate contribution: weight * input_value^exponent
@@ -214,18 +214,18 @@ mod tests {
     #[test]
     fn test_with_different_input_types() {
         // Test with string IDs
-        let string_input = Input::new("neuron-a", 0.5, 1);
+        let string_input = NeuronInput::new("neuron-a", 0.5, 1);
         assert_eq!(*string_input.input(), "neuron-a");
 
         // Test with usize IDs
-        let usize_input = Input::new(42usize, 0.5, 1);
+        let usize_input = NeuronInput::new(42usize, 0.5, 1);
         assert_eq!(*usize_input.input(), 42usize);
 
         // Test with custom type
         #[derive(Debug, Clone, PartialEq)]
         struct NeuronId(u64);
 
-        let custom_input = Input::new(NeuronId(123), 0.5, 1);
+        let custom_input = NeuronInput::new(NeuronId(123), 0.5, 1);
         assert_eq!(*custom_input.input(), NeuronId(123));
     }
 }
