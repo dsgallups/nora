@@ -3,7 +3,7 @@ use std::collections::HashSet;
 use crate::{burn_net::network::BurnNetwork, prelude::*};
 use burn::backend::NdArray;
 fn _test_dupes() {
-    let mutation_chances = MutationChances::new_from_raw(3, 80., 50., 5., 60., 20.);
+    let mutation_chances = MutationChances::new_from_raw(3, 80., 50., 5., 60.);
     let mut top_1 = PolyNetworkTopology::new(20, 20, mutation_chances, &mut rand::rng());
 
     let mut top_2 = top_1.deep_clone();
@@ -22,7 +22,7 @@ fn _test_dupes() {
 
 fn _test_two() {
     use crate::{prelude::*, topology::mutation::MutationChances};
-    let mutation_chances = MutationChances::new_from_raw(3, 80., 50., 5., 60., 20.);
+    let mutation_chances = MutationChances::new_from_raw(3, 80., 50., 5., 60.);
 
     let mut running_topology = PolyNetworkTopology::new(2, 2, mutation_chances, &mut rand::rng());
 
@@ -68,7 +68,7 @@ fn _test_inf() {
         .init();
 
     tracing::info!("test");
-    let mutation_chances = MutationChances::new_from_raw(3, 80., 50., 5., 60., 20.);
+    let mutation_chances = MutationChances::new_from_raw(3, 80., 50., 5., 60.);
 
     let mut running_topology = PolyNetworkTopology::new(2, 2, mutation_chances, &mut rand::rng());
 

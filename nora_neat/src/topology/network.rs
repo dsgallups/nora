@@ -328,22 +328,21 @@ impl PolyNetworkTopology {
                 Vec::with_capacity(og_props.inputs().len());
 
             for og_input in og_props.inputs() {
-                if let Some(strong_parent) = og_input.neuron() {
-                    if let Some(index) = self
+                if let Some(strong_parent) = og_input.neuron()
+                    && let Some(index) = self
                         .neurons
                         .iter()
                         .position(|n| Arc::ptr_eq(n, &strong_parent))
-                    {
-                        let cloned_ident_ref = Arc::downgrade(&new_neurons[index]);
+                {
+                    let cloned_ident_ref = Arc::downgrade(&new_neurons[index]);
 
-                        let cloned_input_topology = PolyInputTopology::new(
-                            cloned_ident_ref,
-                            og_input.weight(),
-                            og_input.exponent(),
-                        );
+                    let cloned_input_topology = PolyInputTopology::new(
+                        cloned_ident_ref,
+                        og_input.weight(),
+                        og_input.exponent(),
+                    );
 
-                        cloned_inputs.push(cloned_input_topology);
-                    }
+                    cloned_inputs.push(cloned_input_topology);
                 }
             }
 
