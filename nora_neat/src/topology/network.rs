@@ -588,8 +588,8 @@ impl NetworkTopology {
     }
 
     //#[instrument(name = "my_span")]
-    pub fn to_simple_network(&self) -> SimplePolyNetwork {
-        SimplePolyNetwork::from_topology(self)
+    pub fn to_simple_network(&self) -> SimpleNetwork {
+        SimpleNetwork::from_topology(self)
     }
 }
 

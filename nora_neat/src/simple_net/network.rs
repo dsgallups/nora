@@ -4,46 +4,7 @@ use rayon::iter::{IndexedParallelIterator as _, IntoParallelRefIterator, Paralle
 
 use crate::prelude::*;
 
-/// A simple CPU-based polynomial neural network for inference.
-///
-/// This struct represents an executable neural network that can perform
-/// forward passes on input data. It maintains references to all neurons
-/// in the network organized into layers for efficient computation.
-///
-/// # Architecture
-///
-/// The network consists of:
-/// - **Input layer**: Neurons that receive external inputs
-/// - **Hidden neurons**: Neurons that process intermediate values
-/// - **Output layer**: Neurons that produce the final outputs
-///
-/// All neurons are stored in a single vector with the input and output
-/// layers maintaining references to their respective neurons.
-///
-/// # Thread Safety
-///
-/// The network uses `Arc<RwLock<>>` for thread-safe access to neurons,
-/// allowing parallel evaluation using Rayon.
-///
-/// # Example
-///
-/// ```rust
-/// use polynomial_neat::prelude::*;
-/// use polynomial_neat::topology::mutation::MutationChances;
-///
-/// // Create a topology
-/// let mutations = MutationChances::new(50);
-/// let topology = PolyNetworkTopology::new(2, 1, mutations, &mut rand::rng());
-///
-/// // Convert to executable network
-/// let network = topology.to_simple_network();
-///
-/// // Run inference
-/// let inputs = vec![1.0, 0.5];
-/// let outputs: Vec<f32> = network.predict(&inputs).collect();
-/// println!("Network output: {:?}", outputs);
-/// ```
-pub struct SimplePolyNetwork {
+pub struct SimpleNetwork {
     // contains all neurons
     neurons: Vec<Arc<RwLock<SimpleNeuron>>>,
     // contains the input neurons. cloned arc of neurons in neurons
@@ -52,7 +13,7 @@ pub struct SimplePolyNetwork {
     output_layer: Vec<Arc<RwLock<SimpleNeuron>>>,
 }
 
-impl SimplePolyNetwork {
+impl SimpleNetwork {
     /// Perform a forward pass through the network with the given inputs.
     ///
     /// This method:
@@ -63,21 +24,6 @@ impl SimplePolyNetwork {
     ///
     /// # Arguments
     /// * `inputs` - Slice of input values. Length should match the number of input neurons.
-    ///
-    /// # Returns
-    /// An iterator over the output values from the network's output neurons.
-    ///
-    /// # Example
-    /// ```rust
-    /// # use polynomial_neat::prelude::*;
-    /// # use polynomial_neat::topology::mutation::MutationChances;
-    /// # let mutations = MutationChances::new(50);
-    /// # let topology = PolyNetworkTopology::new(2, 1, mutations, &mut rand::rng());
-    /// # let network = topology.to_simple_network();
-    /// // Predict with two inputs
-    /// let outputs: Vec<f32> = network.predict(&[1.0, 0.5]).collect();
-    /// assert_eq!(outputs.len(), 1); // One output neuron
-    /// ```
     ///
     /// # Note
     /// If there are more inputs than input neurons, extra inputs are ignored.
@@ -392,6 +338,6 @@ impl SimplePolyNetwork {
             }
         }
 
-        SimplePolyNetwork::from_raw_parts(neurons, input_layer, output_layer)
+        SimpleNetwork::from_raw_parts(neurons, input_layer, output_layer)
     }
 }

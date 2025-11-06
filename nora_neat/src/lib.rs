@@ -13,9 +13,9 @@ pub mod prelude {
         activation::{Bias, Exponent},
         input::NeuronInput,
         //neuron::PolyNeuronInner,
-        neuron_type::{NeuronProps, NeuronType, PropsType},
+        neuron_props::{NeuronProps, NeuronType, PropsType},
     };
-    pub use super::simple_net::{network::SimplePolyNetwork, neuron::SimpleNeuron};
+    pub use super::simple_net::{network::SimpleNetwork, neuron::SimpleNeuron};
     pub use super::topology::{
         mutation::{MAX_MUTATIONS, MutationAction, MutationChances},
         network::NetworkTopology,
