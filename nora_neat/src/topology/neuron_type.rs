@@ -17,7 +17,7 @@ impl Topology {
 }
 //pub type PolyNeuronPropsTopology = PolyProps<Weak<RwLock<NeuronTopology>>>;
 
-impl PolyProps<Topology> {
+impl NeuronProps<Topology> {
     pub(super) fn set_inputs(&mut self, new_inputs: Vec<NeuronInput<Topology>>) {
         self.inputs = new_inputs;
     }

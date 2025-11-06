@@ -43,12 +43,12 @@ pub enum PropsType {
 }
 
 #[derive(Clone, Debug)]
-pub struct PolyProps<I> {
+pub struct NeuronProps<I> {
     pub(crate) props_type: PropsType,
     pub(crate) inputs: Vec<NeuronInput<I>>,
 }
 
-impl<I> PolyProps<I> {
+impl<I> NeuronProps<I> {
     pub fn new(props_type: PropsType, inputs: Vec<NeuronInput<I>>) -> Self {
         Self { props_type, inputs }
     }

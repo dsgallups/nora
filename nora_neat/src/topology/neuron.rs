@@ -12,7 +12,7 @@ use crate::{prelude::*, topology::neuron_type::Topology};
 #[derive(Clone, Debug)]
 pub struct NeuronTopology {
     id: Uuid,
-    neuron_props: Option<PolyProps<Topology>>,
+    neuron_props: Option<NeuronProps<Topology>>,
 }
 
 impl NeuronTopology {
@@ -26,28 +26,28 @@ impl NeuronTopology {
     }
 
     pub fn hidden(id: Uuid, inputs: Vec<NeuronInput<Topology>>) -> Self {
-        let neuron_type = PolyProps::hidden(inputs);
+        let neuron_type = NeuronProps::hidden(inputs);
         Self::new(id, Some(neuron_type))
     }
 
     pub fn output(id: Uuid, inputs: Vec<NeuronInput<Topology>>) -> Self {
-        let neuron_props = PolyProps::output(inputs);
+        let neuron_props = NeuronProps::output(inputs);
 
         Self::new(id, Some(neuron_props))
     }
 
-    pub fn new(id: Uuid, neuron_props: Option<PolyProps<Topology>>) -> Self {
+    pub fn new(id: Uuid, neuron_props: Option<NeuronProps<Topology>>) -> Self {
         Self { id, neuron_props }
     }
 
-    pub fn new_arc(id: Uuid, neuron_props: Option<PolyProps<Topology>>) -> Arc<RwLock<Self>> {
+    pub fn new_arc(id: Uuid, neuron_props: Option<NeuronProps<Topology>>) -> Arc<RwLock<Self>> {
         Arc::new(RwLock::new(Self { id, neuron_props }))
     }
 
-    pub fn props(&self) -> Option<&PolyProps<Topology>> {
+    pub fn props(&self) -> Option<&NeuronProps<Topology>> {
         self.neuron_props.as_ref()
     }
-    pub fn props_mut(&mut self) -> Option<&mut PolyProps<Topology>> {
+    pub fn props_mut(&mut self) -> Option<&mut NeuronProps<Topology>> {
         self.neuron_props.as_mut()
     }
 

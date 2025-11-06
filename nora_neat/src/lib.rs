@@ -13,7 +13,7 @@ pub mod prelude {
         activation::{Bias, Exponent},
         input::NeuronInput,
         //neuron::PolyNeuronInner,
-        neuron_type::{NeuronType, PolyProps, PropsType},
+        neuron_type::{NeuronProps, NeuronType, PropsType},
     };
     pub use super::simple_net::{
         input::NeuronInputAlias, network::SimplePolyNetwork, neuron::SimpleNeuron,

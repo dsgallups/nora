@@ -2,4 +2,4 @@ use std::sync::{Arc, RwLock};
 
 use crate::prelude::*;
 
-pub type NeuronPropsAlias = PolyProps<Arc<RwLock<SimpleNeuron>>>;
+pub type NeuronPropsAlias = NeuronProps<Arc<RwLock<SimpleNeuron>>>;
