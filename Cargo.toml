@@ -49,7 +49,7 @@ double-parens = "allow"
 
 [workspace]
 resolver = "3"
-members = ["nora_core", "nora_neat"]
+members = ["nora_core"]
 
 [workspace.dependencies]
 nora_core = {path = "nora_core"}
