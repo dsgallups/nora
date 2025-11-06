@@ -367,7 +367,7 @@ impl SimplePolyNetwork {
     /// // Now ready for inference
     /// let outputs: Vec<f32> = network.predict(&[1.0, 2.0, 3.0]).collect();
     /// ```
-    pub fn from_topology(topology: &PolyNetworkTopology) -> Self {
+    pub fn from_topology(topology: &NetworkTopology) -> Self {
         let mut neurons: Vec<Arc<RwLock<SimpleNeuron>>> =
             Vec::with_capacity(topology.neurons().len());
         let mut input_layer: Vec<Arc<RwLock<SimpleNeuron>>> = Vec::new();

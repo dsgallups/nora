@@ -159,8 +159,8 @@ pub mod prelude {
     pub use super::topology::{
         input::PolyInputTopology,
         mutation::{MAX_MUTATIONS, MutationAction, MutationChances},
-        network::PolyNetworkTopology,
-        neuron::PolyNeuronTopology,
+        network::NetworkTopology,
+        neuron::NeuronTopology,
         neuron_type::PolyNeuronPropsTopology,
     };
     #[cfg(test)]

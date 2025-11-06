@@ -4,7 +4,7 @@ use rand::Rng;
 
 use crate::prelude::*;
 
-pub type PolyNeuronPropsTopology = PolyProps<Weak<RwLock<PolyNeuronTopology>>>;
+pub type PolyNeuronPropsTopology = PolyProps<Weak<RwLock<NeuronTopology>>>;
 
 impl PolyNeuronPropsTopology {
     pub(super) fn set_inputs(&mut self, new_inputs: Vec<PolyInputTopology>) {

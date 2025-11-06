@@ -89,7 +89,7 @@ impl<B: Backend> BurnNetwork<B> {
     /// let device = burn::backend::ndarray::NdArrayDevice::default();
     /// let network = BurnNetwork::<NdArray>::from_topology(&topology, device);
     /// ```
-    pub fn from_topology(topology: &PolyNetworkTopology, device: B::Device) -> Self {
+    pub fn from_topology(topology: &NetworkTopology, device: B::Device) -> Self {
         let inputs: FnvHashMap<Uuid, usize> = topology
             .neuron_ids()
             .into_iter()
@@ -185,10 +185,10 @@ mod tests {
 
         println!("Input 1 id: {}\nInput 2 id: {}", x_id, y_id);
 
-        let x_n = arc(PolyNeuronTopology::input(x_id));
-        let y_n = arc(PolyNeuronTopology::input(y_id));
+        let x_n = arc(NeuronTopology::input(x_id));
+        let y_n = arc(NeuronTopology::input(y_id));
 
-        let hidden_one = arc(PolyNeuronTopology::hidden(
+        let hidden_one = arc(NeuronTopology::hidden(
             Uuid::new_v4(),
             vec![
                 PolyInputTopology::downgrade(&x_n, 3., 1),
@@ -198,7 +198,7 @@ mod tests {
 
         // (3x + y )^2 =
         // 9x^2 + 6xy + y^2
-        let output_1 = arc(PolyNeuronTopology::output(
+        let output_1 = arc(NeuronTopology::output(
             Uuid::new_v4(),
             vec![PolyInputTopology::downgrade(&hidden_one, 1., 2)],
         ));
@@ -206,12 +206,12 @@ mod tests {
         // 2(3x + y)
         //
         // 6x + 2y
-        let output_2 = arc(PolyNeuronTopology::output(
+        let output_2 = arc(NeuronTopology::output(
             Uuid::new_v4(),
             vec![PolyInputTopology::downgrade(&hidden_one, 2., 1)],
         ));
 
-        let topology = PolyNetworkTopology::from_raw_parts(
+        let topology = NetworkTopology::from_raw_parts(
             vec![x_n, y_n, hidden_one, output_1, output_2],
             MutationChances::none(),
         );
@@ -229,7 +229,7 @@ mod tests {
         use rand::rngs::StdRng;
 
         let mut rng = StdRng::seed_from_u64(3819234);
-        let topology = PolyNetworkTopology::new(2, 2, MutationChances::none(), &mut rng);
+        let topology = NetworkTopology::new(2, 2, MutationChances::none(), &mut rng);
 
         println!("here 1");
         let device = burn::backend::ndarray::NdArrayDevice::default();

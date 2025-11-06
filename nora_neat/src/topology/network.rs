@@ -35,12 +35,12 @@ use crate::prelude::*;
 /// // Convert to executable network
 /// let network = evolved.to_simple_network();
 /// ```
-pub struct PolyNetworkTopology {
-    neurons: Vec<Arc<RwLock<PolyNeuronTopology>>>,
+pub struct NetworkTopology {
+    neurons: Vec<Arc<RwLock<NeuronTopology>>>,
     mutation_chances: MutationChances,
 }
 
-impl PolyNetworkTopology {
+impl NetworkTopology {
     /// Create a network topology from raw components.
     ///
     /// This is a low-level constructor primarily used internally or when
@@ -50,7 +50,7 @@ impl PolyNetworkTopology {
     /// * `neurons` - Vector of all neurons in the network
     /// * `mutation_chances` - Configuration for evolution parameters
     pub fn from_raw_parts(
-        neurons: Vec<Arc<RwLock<PolyNeuronTopology>>>,
+        neurons: Vec<Arc<RwLock<NeuronTopology>>>,
         mutation_chances: MutationChances,
     ) -> Self {
         Self {
@@ -66,7 +66,7 @@ impl PolyNetworkTopology {
         rng: &mut impl Rng,
     ) -> Self {
         let input_neurons = (0..num_inputs)
-            .map(|_| Arc::new(RwLock::new(PolyNeuronTopology::input(Uuid::new_v4()))))
+            .map(|_| Arc::new(RwLock::new(NeuronTopology::input(Uuid::new_v4()))))
             .collect::<Vec<_>>();
 
         let output_neurons = (0..num_outputs)
@@ -93,7 +93,7 @@ impl PolyNetworkTopology {
 
                 let chosen_inputs = chosen_inputs.into_iter().map(|(input, _)| input).collect();
 
-                Arc::new(RwLock::new(PolyNeuronTopology::output(
+                Arc::new(RwLock::new(NeuronTopology::output(
                     Uuid::new_v4(),
                     chosen_inputs,
                 )))
@@ -115,7 +115,7 @@ impl PolyNetworkTopology {
         rng: &mut impl Rng,
     ) -> Self {
         let input_neurons = (0..num_inputs)
-            .map(|_| Arc::new(RwLock::new(PolyNeuronTopology::input(Uuid::new_v4()))))
+            .map(|_| Arc::new(RwLock::new(NeuronTopology::input(Uuid::new_v4()))))
             .collect::<Vec<_>>();
 
         let output_neurons = (0..num_outputs)
@@ -127,7 +127,7 @@ impl PolyNetworkTopology {
                     .map(|input| PolyInputTopology::new_rand(Arc::downgrade(input), rng))
                     .collect::<Vec<_>>();
 
-                Arc::new(RwLock::new(PolyNeuronTopology::output(
+                Arc::new(RwLock::new(NeuronTopology::output(
                     Uuid::new_v4(),
                     chosen_inputs,
                 )))
@@ -157,7 +157,7 @@ impl PolyNetworkTopology {
     ///
     /// # Returns
     /// A reference to the vector containing all neurons
-    pub fn neurons(&self) -> &Vec<Arc<RwLock<PolyNeuronTopology>>> {
+    pub fn neurons(&self) -> &Vec<Arc<RwLock<NeuronTopology>>> {
         &self.neurons
     }
 
@@ -195,7 +195,7 @@ impl PolyNetworkTopology {
     ///
     /// # Returns
     /// The neuron if found, None otherwise
-    pub fn find_by_id(&self, id: Uuid) -> Option<Arc<RwLock<PolyNeuronTopology>>> {
+    pub fn find_by_id(&self, id: Uuid) -> Option<Arc<RwLock<NeuronTopology>>> {
         self.neurons
             .iter()
             .find(|rep| rep.read().unwrap().id() == id)
@@ -209,7 +209,7 @@ impl PolyNetworkTopology {
     ///
     /// # Returns
     /// A randomly selected neuron
-    pub fn random_neuron(&self, rng: &mut impl Rng) -> &Arc<RwLock<PolyNeuronTopology>> {
+    pub fn random_neuron(&self, rng: &mut impl Rng) -> &Arc<RwLock<NeuronTopology>> {
         self.neurons
             .get(rng.random_range(0..self.neurons.len()))
             .unwrap()
@@ -298,12 +298,12 @@ impl PolyNetworkTopology {
     ///
     /// # Arguments
     /// * `neuron` - The neuron to add
-    pub fn push(&mut self, neuron: Arc<RwLock<PolyNeuronTopology>>) {
+    pub fn push(&mut self, neuron: Arc<RwLock<NeuronTopology>>) {
         self.neurons.push(neuron);
     }
 
-    pub fn deep_clone(&self) -> PolyNetworkTopology {
-        let mut new_neurons: Vec<Arc<RwLock<PolyNeuronTopology>>> =
+    pub fn deep_clone(&self) -> NetworkTopology {
+        let mut new_neurons: Vec<Arc<RwLock<NeuronTopology>>> =
             Vec::with_capacity(self.neurons.len());
 
         // the deep cloning step removes all original inputs for all nodes
@@ -355,14 +355,14 @@ impl PolyNetworkTopology {
             }
         }
 
-        PolyNetworkTopology {
+        NetworkTopology {
             neurons: new_neurons,
             mutation_chances: self.mutation_chances,
         }
     }
 
     //#[instrument(skip_all)]
-    pub fn replicate(&self, rng: &mut impl Rng) -> PolyNetworkTopology {
+    pub fn replicate(&self, rng: &mut impl Rng) -> NetworkTopology {
         let mut child = self.deep_clone();
 
         let actions = self.mutation_chances.gen_mutation_actions(rng);
@@ -447,7 +447,7 @@ impl PolyNetworkTopology {
                     };
 
                     //make a new neuron
-                    let new_hidden_node = Arc::new(RwLock::new(PolyNeuronTopology::hidden(
+                    let new_hidden_node = Arc::new(RwLock::new(NeuronTopology::hidden(
                         Uuid::new_v4(),
                         vec![removed_input],
                     )));
@@ -542,7 +542,7 @@ impl PolyNetworkTopology {
         }
 
         fn dfs(
-            node: &PolyNeuronTopology,
+            node: &NeuronTopology,
             stack: &mut HashSet<Uuid>,
             visited: &mut HashSet<Uuid>,
         ) -> Vec<RemoveFrom> {
@@ -640,9 +640,9 @@ pub struct TopologyInfo {
 
 #[test]
 fn make_simple_network() {
-    let input = arc(PolyNeuronTopology::input(Uuid::new_v4()));
+    let input = arc(NeuronTopology::input(Uuid::new_v4()));
 
-    let hidden_1 = arc(PolyNeuronTopology::hidden(
+    let hidden_1 = arc(NeuronTopology::hidden(
         Uuid::new_v4(),
         vec![
             PolyInputTopology::downgrade(&input, 3., 1),
@@ -650,12 +650,12 @@ fn make_simple_network() {
         ],
     ));
 
-    let hidden_2 = arc(PolyNeuronTopology::hidden(
+    let hidden_2 = arc(NeuronTopology::hidden(
         Uuid::new_v4(),
         vec![PolyInputTopology::downgrade(&input, 1., 2)],
     ));
 
-    let output = arc(PolyNeuronTopology::output(
+    let output = arc(NeuronTopology::output(
         Uuid::new_v4(),
         vec![
             PolyInputTopology::downgrade(&hidden_1, 1., 1),
@@ -663,7 +663,7 @@ fn make_simple_network() {
         ],
     ));
 
-    let topology = PolyNetworkTopology::from_raw_parts(
+    let topology = NetworkTopology::from_raw_parts(
         vec![input, hidden_1, hidden_2, output],
         MutationChances::none(),
     );

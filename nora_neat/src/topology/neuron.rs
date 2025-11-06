@@ -10,12 +10,12 @@ use crate::prelude::*;
 ///
 /// Its props are its inputs.
 #[derive(Clone, Debug)]
-pub struct PolyNeuronTopology {
+pub struct NeuronTopology {
     id: Uuid,
     neuron_props: Option<PolyNeuronPropsTopology>,
 }
 
-impl PolyNeuronTopology {
+impl NeuronTopology {
     /// This creates a topological input node. There are no props
     /// for this type.
     pub fn input(id: Uuid) -> Self {
@@ -52,7 +52,7 @@ impl PolyNeuronTopology {
 
     /// Note that inputs are reset here.
     pub fn deep_clone(&self) -> Self {
-        PolyNeuronTopology {
+        NeuronTopology {
             id: Uuid::new_v4(),
             neuron_props: self.neuron_props.as_ref().map(|props| props.deep_clone()),
         }
