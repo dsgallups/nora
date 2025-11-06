@@ -2,7 +2,7 @@ use std::sync::{Arc, RwLock};
 
 use uuid::Uuid;
 
-use crate::{prelude::*, topology::neuron_type::Topology};
+use crate::{prelude::*, simple_net::neuron_type::Active, topology::neuron_type::Topology};
 
 /// This defines a node's topology. What does this mean?
 ///
@@ -107,15 +107,15 @@ impl NeuronTopology {
                             })
                             .unwrap();
 
-                        new_neuron_inputs.push(NeuronInputAlias::new(
-                            Arc::clone(neuron_in_array),
+                        new_neuron_inputs.push(NeuronInput::new(
+                            Active::new(neuron_in_array.clone()),
                             topology_input.weight(),
                             topology_input.exponent(),
                         ));
                     }
                 }
 
-                Some(NeuronPropsAlias::new(
+                Some(NeuronProps::new(
                     topology_props.props_type(),
                     new_neuron_inputs,
                 ))

@@ -1,18 +1,16 @@
-use std::sync::{Arc, RwLock};
-
-use crate::prelude::*;
+use crate::{prelude::*, simple_net::neuron_type::Active};
 use rayon::iter::{IndexedParallelIterator, IntoParallelRefIterator as _, ParallelIterator as _};
 use uuid::Uuid;
 
 pub struct SimpleNeuron {
     id: Uuid,
-    props: Option<NeuronProps<Arc<RwLock<SimpleNeuron>>>>,
+    props: Option<NeuronProps<Active>>,
     /// some working value, returned by the result of the activation value.
     activated_value: Option<f32>,
 }
 
 impl SimpleNeuron {
-    pub fn new(id: Uuid, props: Option<NeuronPropsAlias>) -> Self {
+    pub fn new(id: Uuid, props: Option<NeuronProps<Active>>) -> Self {
         Self {
             id,
             props,
@@ -20,7 +18,7 @@ impl SimpleNeuron {
         }
     }
 
-    pub fn inputs(&self) -> Option<&[NeuronInputAlias]> {
+    pub fn inputs(&self) -> Option<&[NeuronInput<Active>]> {
         self.props.as_ref().map(|props| props.inputs())
     }
 
@@ -28,7 +26,7 @@ impl SimpleNeuron {
         self.id
     }
 
-    pub fn props(&self) -> Option<&NeuronPropsAlias> {
+    pub fn props(&self) -> Option<&NeuronProps<Active>> {
         self.props.as_ref()
     }
 

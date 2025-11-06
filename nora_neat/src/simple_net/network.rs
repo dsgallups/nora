@@ -243,7 +243,7 @@ impl SimplePolyNetwork {
                 Some(props) => {
                     str.push('[');
                     for input in props.inputs() {
-                        let n = input.input().read().unwrap();
+                        let n = input.input().handle().read().unwrap();
 
                         let loc = self
                             .neurons
@@ -278,7 +278,7 @@ impl SimplePolyNetwork {
                 Some(props) => {
                     str.push('[');
                     for input in props.inputs() {
-                        let n = input.input().read().unwrap();
+                        let n = input.input().handle().read().unwrap();
 
                         let loc = self
                             .neurons
@@ -313,7 +313,7 @@ impl SimplePolyNetwork {
                 Some(props) => {
                     str.push('[');
                     for input in props.inputs() {
-                        let n = input.input().read().unwrap();
+                        let n = input.input().handle().read().unwrap();
 
                         let loc = self
                             .neurons
