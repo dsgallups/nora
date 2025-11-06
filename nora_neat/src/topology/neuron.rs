@@ -24,12 +24,13 @@ impl NeuronTopology {
             neuron_props: None,
         }
     }
-    pub fn hidden(id: Uuid, inputs: Vec<PolyInput<Topology>>) -> Self {
+
+    pub fn hidden(id: Uuid, inputs: Vec<Input<Topology>>) -> Self {
         let neuron_type = PolyProps::hidden(inputs);
         Self::new(id, Some(neuron_type))
     }
 
-    pub fn output(id: Uuid, inputs: Vec<PolyInput<Topology>>) -> Self {
+    pub fn output(id: Uuid, inputs: Vec<Input<Topology>>) -> Self {
         let neuron_props = PolyProps::output(inputs);
 
         Self::new(id, Some(neuron_props))

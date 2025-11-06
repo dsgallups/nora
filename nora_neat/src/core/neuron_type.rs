@@ -45,17 +45,17 @@ pub enum PropsType {
 #[derive(Clone, Debug)]
 pub struct PolyProps<I> {
     pub(crate) props_type: PropsType,
-    pub(crate) inputs: Vec<PolyInput<I>>,
+    pub(crate) inputs: Vec<Input<I>>,
 }
 
 impl<I> PolyProps<I> {
-    pub fn new(props_type: PropsType, inputs: Vec<PolyInput<I>>) -> Self {
+    pub fn new(props_type: PropsType, inputs: Vec<Input<I>>) -> Self {
         Self { props_type, inputs }
     }
-    pub fn hidden(inputs: Vec<PolyInput<I>>) -> Self {
+    pub fn hidden(inputs: Vec<Input<I>>) -> Self {
         Self::new(PropsType::Hidden, inputs)
     }
-    pub fn output(inputs: Vec<PolyInput<I>>) -> Self {
+    pub fn output(inputs: Vec<Input<I>>) -> Self {
         Self::new(PropsType::Output, inputs)
     }
 
@@ -63,7 +63,7 @@ impl<I> PolyProps<I> {
         self.inputs.len()
     }
 
-    pub fn inputs(&self) -> &[PolyInput<I>] {
+    pub fn inputs(&self) -> &[Input<I>] {
         self.inputs.as_slice()
     }
 

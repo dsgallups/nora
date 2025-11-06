@@ -5,7 +5,7 @@ use std::{
 
 use crate::prelude::*;
 
-pub type NeuronInput = PolyInput<Arc<RwLock<SimpleNeuron>>>;
+pub type NeuronInput = Input<Arc<RwLock<SimpleNeuron>>>;
 
 impl NeuronInput {
     /// applies a weight and exponent to the input neuron and returns the result
@@ -49,13 +49,13 @@ fn ensure_inf_possible() {
     use uuid::Uuid;
     let neuron = Arc::new(RwLock::new(SimpleNeuron::new(
         Uuid::new_v4(),
-        Some(NeuronProps::output(vec![PolyInput::new(
+        Some(NeuronProps::output(vec![Input::new(
             Arc::new(RwLock::new(SimpleNeuron::new(Uuid::new_v4(), None))),
             0.,
             1,
         )])),
     )));
-    let neuron_input = PolyInput::new(neuron, 1., -1);
+    let neuron_input = Input::new(neuron, 1., -1);
 
     let value = neuron_input.get_input_value();
     assert_eq!(value, f32::INFINITY);
@@ -65,13 +65,13 @@ fn zero_to_zero_power() {
     use uuid::Uuid;
     let neuron = Arc::new(RwLock::new(SimpleNeuron::new(
         Uuid::new_v4(),
-        Some(NeuronProps::output(vec![PolyInput::new(
+        Some(NeuronProps::output(vec![Input::new(
             Arc::new(RwLock::new(SimpleNeuron::new(Uuid::new_v4(), None))),
             0.,
             1,
         )])),
     )));
-    let neuron_input = PolyInput::new(neuron, 1., 0);
+    let neuron_input = Input::new(neuron, 1., 0);
 
     let value = neuron_input.get_input_value();
     assert_eq!(value, 1.);

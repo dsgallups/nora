@@ -4,7 +4,7 @@ use crate::{prelude::*, topology::neuron_type::Topology};
 
 //pub type PolyInputTopology = PolyInput<Weak<RwLock<NeuronTopology>>>;
 
-impl PolyInput<Topology> {
+impl Input<Topology> {
     pub fn neuron(&self) -> Option<Arc<RwLock<NeuronTopology>>> {
         Weak::upgrade(self.input().handle())
     }

@@ -60,10 +60,7 @@ impl NetworkTopology {
                     .map(|_| {
                         let topology_index = rng.random_range(0..input_neurons.len());
                         let input = input_neurons.get(topology_index).unwrap();
-                        (
-                            PolyInput::new_rand(Topology::new(input), rng),
-                            topology_index,
-                        )
+                        (Input::new_rand(Topology::new(input), rng), topology_index)
                     })
                     .collect::<Vec<_>>();
 
@@ -103,7 +100,7 @@ impl NetworkTopology {
 
                 let chosen_inputs = input_neurons
                     .iter()
-                    .map(|input| PolyInput::new_rand(Topology::new(input), rng))
+                    .map(|input| Input::new_rand(Topology::new(input), rng))
                     .collect::<Vec<_>>();
 
                 Arc::new(RwLock::new(NeuronTopology::output(
@@ -303,7 +300,7 @@ impl NetworkTopology {
                 continue;
             };
 
-            let mut cloned_inputs: Vec<PolyInput<Topology>> =
+            let mut cloned_inputs: Vec<Input<Topology>> =
                 Vec::with_capacity(og_props.inputs().len());
 
             for og_input in og_props.inputs() {
@@ -315,7 +312,7 @@ impl NetworkTopology {
                 {
                     //let cloned_ident_ref = Arc::downgrade();
 
-                    let cloned_input_topology = PolyInput::new(
+                    let cloned_input_topology = Input::new(
                         Topology::new(&new_neurons[index]),
                         og_input.weight(),
                         og_input.exponent(),
@@ -434,7 +431,7 @@ impl NetworkTopology {
                     self.push(Arc::clone(&new_hidden_node));
 
                     //add the new hidden node to the list of inputs for the neuron
-                    let new_replicant_for_neuron = PolyInput::new(
+                    let new_replicant_for_neuron = Input::new(
                         Topology::new(&new_hidden_node),
                         Bias::rand(rng),
                         Exponent::rand(rng),
@@ -459,7 +456,7 @@ impl NetworkTopology {
                     }
 
                     if let Some(props) = output_neuron.write().unwrap().props_mut() {
-                        let input = PolyInput::new(
+                        let input = Input::new(
                             Topology::new(input_neuron),
                             Bias::rand(rng),
                             Exponent::rand(rng),
@@ -607,21 +604,21 @@ fn make_simple_network() {
     let hidden_1 = arc(NeuronTopology::hidden(
         Uuid::new_v4(),
         vec![
-            PolyInput::downgrade(&input, 3., 1),
-            PolyInput::downgrade(&input, 1., 2),
+            Input::downgrade(&input, 3., 1),
+            Input::downgrade(&input, 1., 2),
         ],
     ));
 
     let hidden_2 = arc(NeuronTopology::hidden(
         Uuid::new_v4(),
-        vec![PolyInput::downgrade(&input, 1., 2)],
+        vec![Input::downgrade(&input, 1., 2)],
     ));
 
     let output = arc(NeuronTopology::output(
         Uuid::new_v4(),
         vec![
-            PolyInput::downgrade(&hidden_1, 1., 1),
-            PolyInput::downgrade(&hidden_2, 1., 1),
+            Input::downgrade(&hidden_1, 1., 1),
+            Input::downgrade(&hidden_2, 1., 1),
         ],
     ));
 

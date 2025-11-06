@@ -11,7 +11,7 @@ mod test_utils;
 pub mod prelude {
     pub use super::core::{
         activation::{Bias, Exponent},
-        input::PolyInput,
+        input::Input,
         //neuron::PolyNeuronInner,
         neuron_type::{NeuronType, PolyProps, PropsType},
     };
