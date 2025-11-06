@@ -1,8 +1,14 @@
+mod neuron_type;
+pub use neuron_type::*;
+
+mod input;
+pub use input::*;
+
 use std::sync::{Arc, RwLock};
 
 use uuid::Uuid;
 
-use crate::{prelude::*, simple_net::neuron_type::Active, topology::neuron_type::Topology};
+use crate::prelude::*;
 
 /// This defines a node's topology. What does this mean?
 ///
@@ -86,44 +92,44 @@ impl NeuronTopology {
         self.neuron_type() == NeuronType::input()
     }
 
-    pub fn to_neuron(&self, neurons: &mut Vec<Arc<RwLock<SimpleNeuron>>>) {
-        for neuron in neurons.iter() {
-            if neuron.read().unwrap().id() == self.id() {
-                return;
-            }
-        }
+    // pub fn to_neuron(&self, neurons: &mut Vec<Arc<RwLock<SimpleNeuron>>>) {
+    //     for neuron in neurons.iter() {
+    //         if neuron.read().unwrap().id() == self.id() {
+    //             return;
+    //         }
+    //     }
 
-        let new_neuron_props = match self.props() {
-            Some(topology_props) => {
-                let mut new_neuron_inputs = Vec::with_capacity(topology_props.inputs().len());
+    //     let new_neuron_props = match self.props() {
+    //         Some(topology_props) => {
+    //             let mut new_neuron_inputs = Vec::with_capacity(topology_props.inputs().len());
 
-                for topology_input in topology_props.inputs() {
-                    if let Some(topology_input_neuron) = topology_input.neuron() {
-                        topology_input_neuron.read().unwrap().to_neuron(neurons);
-                        let neuron_in_array = neurons
-                            .iter()
-                            .find(|n| {
-                                n.read().unwrap().id() == topology_input_neuron.read().unwrap().id()
-                            })
-                            .unwrap();
+    //             for topology_input in topology_props.inputs() {
+    //                 if let Some(topology_input_neuron) = topology_input.neuron() {
+    //                     topology_input_neuron.read().unwrap().to_neuron(neurons);
+    //                     let neuron_in_array = neurons
+    //                         .iter()
+    //                         .find(|n| {
+    //                             n.read().unwrap().id() == topology_input_neuron.read().unwrap().id()
+    //                         })
+    //                         .unwrap();
 
-                        new_neuron_inputs.push(NeuronInput::new(
-                            Active::new(neuron_in_array.clone()),
-                            topology_input.weight(),
-                            topology_input.exponent(),
-                        ));
-                    }
-                }
+    //                     new_neuron_inputs.push(NeuronInput::new(
+    //                         Active::new(neuron_in_array.clone()),
+    //                         topology_input.weight(),
+    //                         topology_input.exponent(),
+    //                     ));
+    //                 }
+    //             }
 
-                Some(NeuronProps::new(
-                    topology_props.props_type(),
-                    new_neuron_inputs,
-                ))
-            }
-            None => None,
-        };
+    //             Some(NeuronProps::new(
+    //                 topology_props.props_type(),
+    //                 new_neuron_inputs,
+    //             ))
+    //         }
+    //         None => None,
+    //     };
 
-        let neuron = Arc::new(RwLock::new(SimpleNeuron::new(self.id, new_neuron_props)));
-        neurons.push(Arc::clone(&neuron));
-    }
+    //     let neuron = Arc::new(RwLock::new(SimpleNeuron::new(self.id, new_neuron_props)));
+    //     neurons.push(Arc::clone(&neuron));
+    // }
 }

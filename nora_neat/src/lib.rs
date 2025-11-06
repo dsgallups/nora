@@ -1,28 +1,19 @@
 //pub mod burn_net;
+//pub mod simple_net;
 
-pub mod core;
-
-pub mod simple_net;
-
+pub mod activation;
+pub mod network;
+pub mod neuron;
 pub mod topology;
 
 mod test_utils;
 
 pub mod prelude {
-    pub use super::core::{
-        activation::{Bias, Exponent},
-        input::NeuronInput,
-        //neuron::PolyNeuronInner,
-        neuron_props::{NeuronProps, NeuronType, PropsType},
-    };
-    pub use super::simple_net::{network::SimpleNetwork, neuron::SimpleNeuron};
-    pub use super::topology::{
-        mutation::{MAX_MUTATIONS, MutationAction, MutationChances},
-        network::NetworkTopology,
-        neuron::NeuronTopology,
-    };
-    #[cfg(test)]
-    pub(crate) use crate::test_utils::arc;
+    pub use crate::activation::*;
+    pub use crate::network::*;
+    pub use crate::neuron::*;
+    pub(crate) use crate::test_utils::*;
+    pub use crate::topology::*;
 }
 
 // #[cfg(test)]

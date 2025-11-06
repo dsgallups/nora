@@ -6,7 +6,7 @@ use std::{
 use rand::Rng;
 use uuid::Uuid;
 
-use crate::{prelude::*, topology::neuron_type::Topology};
+use crate::prelude::*;
 
 /// Represents the topology (structure) of a polynomial neural network.
 ///
@@ -588,9 +588,9 @@ impl NetworkTopology {
     }
 
     //#[instrument(name = "my_span")]
-    pub fn to_simple_network(&self) -> SimpleNetwork {
-        SimpleNetwork::from_topology(self)
-    }
+    // pub fn to_simple_network(&self) -> SimpleNetwork {
+    //     SimpleNetwork::from_topology(self)
+    // }
 }
 
 #[derive(Default, Debug, Clone, Copy)]

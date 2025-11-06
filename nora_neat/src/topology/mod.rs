@@ -1,5 +1,5 @@
-pub mod input;
-pub mod mutation;
-pub mod network;
-pub mod neuron;
-pub mod neuron_type;
+mod input;
+pub use input::*;
+
+mod mutation;
+pub use mutation::*;
