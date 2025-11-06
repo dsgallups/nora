@@ -4,10 +4,20 @@ use rand::Rng;
 
 use crate::prelude::*;
 
-pub type PolyNeuronPropsTopology = PolyProps<Weak<RwLock<NeuronTopology>>>;
+#[derive(Debug, Clone)]
+pub struct ForNeuronTop(Weak<RwLock<NeuronTopology>>);
+impl ForNeuronTop {
+    pub fn new(inner: Weak<RwLock<NeuronTopology>>) -> Self {
+        Self(inner)
+    }
+    pub fn handle(&self) -> &Weak<RwLock<NeuronTopology>> {
+        &self.0
+    }
+}
+//pub type PolyNeuronPropsTopology = PolyProps<Weak<RwLock<NeuronTopology>>>;
 
-impl PolyNeuronPropsTopology {
-    pub(super) fn set_inputs(&mut self, new_inputs: Vec<PolyInputTopology>) {
+impl PolyProps<ForNeuronTop> {
+    pub(super) fn set_inputs(&mut self, new_inputs: Vec<PolyInput<ForNeuronTop>>) {
         self.inputs = new_inputs;
     }
 
@@ -19,7 +29,7 @@ impl PolyNeuronPropsTopology {
         }
     }
 
-    pub fn add_input(&mut self, input: PolyInputTopology) {
+    pub fn add_input(&mut self, input: PolyInput<ForNeuronTop>) {
         self.inputs.push(input);
     }
 
@@ -34,7 +44,7 @@ impl PolyNeuronPropsTopology {
     }
 
     /// Returnes the removed input, if it has inputs.
-    pub fn remove_random_input(&mut self, rng: &mut impl Rng) -> Option<PolyInputTopology> {
+    pub fn remove_random_input(&mut self, rng: &mut impl Rng) -> Option<PolyInput<ForNeuronTop>> {
         if self.inputs.is_empty() {
             return None;
         }
@@ -44,7 +54,10 @@ impl PolyNeuronPropsTopology {
         Some(removed)
     }
 
-    pub fn get_random_input_mut(&mut self, rng: &mut impl Rng) -> Option<&mut PolyInputTopology> {
+    pub fn get_random_input_mut(
+        &mut self,
+        rng: &mut impl Rng,
+    ) -> Option<&mut PolyInput<ForNeuronTop>> {
         if self.inputs.is_empty() {
             return None;
         }

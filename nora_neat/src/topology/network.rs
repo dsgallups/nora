@@ -6,9 +6,8 @@ use std::{
 use rand::Rng;
 use uuid::Uuid;
 
-use crate::prelude::*;
+use crate::{prelude::*, topology::neuron_type::ForNeuronTop};
 
-#[derive(Clone, Debug)]
 /// Represents the topology (structure) of a polynomial neural network.
 ///
 /// This struct encodes the complete architecture of a neural network including:
@@ -18,23 +17,7 @@ use crate::prelude::*;
 ///
 /// The topology can be evolved through mutations and converted into executable
 /// networks for inference.
-///
-/// # Example
-///
-/// ```rust
-/// use polynomial_neat::prelude::*;
-/// use polynomial_neat::topology::mutation::MutationChances;
-///
-/// // Create a network with 3 inputs and 2 outputs
-/// let mutations = MutationChances::new(50);
-/// let topology = PolyNetworkTopology::new(3, 2, mutations, &mut rand::rng());
-///
-/// // Evolve the network
-/// let evolved = topology.replicate(&mut rand::rng());
-///
-/// // Convert to executable network
-/// let network = evolved.to_simple_network();
-/// ```
+#[derive(Clone, Debug)]
 pub struct NetworkTopology {
     neurons: Vec<Arc<RwLock<NeuronTopology>>>,
     mutation_chances: MutationChances,
@@ -45,10 +28,6 @@ impl NetworkTopology {
     ///
     /// This is a low-level constructor primarily used internally or when
     /// manually constructing network architectures.
-    ///
-    /// # Arguments
-    /// * `neurons` - Vector of all neurons in the network
-    /// * `mutation_chances` - Configuration for evolution parameters
     pub fn from_raw_parts(
         neurons: Vec<Arc<RwLock<NeuronTopology>>>,
         mutation_chances: MutationChances,
@@ -82,7 +61,7 @@ impl NetworkTopology {
                         let topology_index = rng.random_range(0..input_neurons.len());
                         let input = input_neurons.get(topology_index).unwrap();
                         (
-                            PolyInputTopology::new_rand(Arc::downgrade(input), rng),
+                            PolyInput::new_rand(ForNeuronTop::new(Arc::downgrade(input)), rng),
                             topology_index,
                         )
                     })
@@ -124,7 +103,7 @@ impl NetworkTopology {
 
                 let chosen_inputs = input_neurons
                     .iter()
-                    .map(|input| PolyInputTopology::new_rand(Arc::downgrade(input), rng))
+                    .map(|input| PolyInput::new_rand(ForNeuronTop::new(Arc::downgrade(input)), rng))
                     .collect::<Vec<_>>();
 
                 Arc::new(RwLock::new(NeuronTopology::output(
@@ -324,7 +303,7 @@ impl NetworkTopology {
                 continue;
             };
 
-            let mut cloned_inputs: Vec<PolyInputTopology> =
+            let mut cloned_inputs: Vec<PolyInput<ForNeuronTop>> =
                 Vec::with_capacity(og_props.inputs().len());
 
             for og_input in og_props.inputs() {
@@ -336,8 +315,8 @@ impl NetworkTopology {
                 {
                     let cloned_ident_ref = Arc::downgrade(&new_neurons[index]);
 
-                    let cloned_input_topology = PolyInputTopology::new(
-                        cloned_ident_ref,
+                    let cloned_input_topology = PolyInput::new(
+                        ForNeuronTop::new(cloned_ident_ref),
                         og_input.weight(),
                         og_input.exponent(),
                     );
@@ -455,8 +434,8 @@ impl NetworkTopology {
                     self.push(Arc::clone(&new_hidden_node));
 
                     //add the new hidden node to the list of inputs for the neuron
-                    let new_replicant_for_neuron = PolyInputTopology::new(
-                        Arc::downgrade(&new_hidden_node),
+                    let new_replicant_for_neuron = PolyInput::new(
+                        ForNeuronTop::new(Arc::downgrade(&new_hidden_node)),
                         Bias::rand(rng),
                         Exponent::rand(rng),
                     );
@@ -480,8 +459,8 @@ impl NetworkTopology {
                     }
 
                     if let Some(props) = output_neuron.write().unwrap().props_mut() {
-                        let input = PolyInputTopology::new(
-                            Arc::downgrade(input_neuron),
+                        let input = PolyInput::new(
+                            ForNeuronTop::new(Arc::downgrade(input_neuron)),
                             Bias::rand(rng),
                             Exponent::rand(rng),
                         );
@@ -502,23 +481,6 @@ impl NetworkTopology {
                     };
 
                     random_input.adjust_weight(rng.random_range(-1.0..=1.0));
-                }
-                MutateExponent => {
-                    let mut neuron = self.random_neuron(rng).write().unwrap();
-                    let Some(random_input) = neuron
-                        .props_mut()
-                        .and_then(|props| props.get_random_input_mut(rng))
-                    else {
-                        continue;
-                    };
-
-                    random_input.adjust_exp(rng.random_range(-1..=1));
-                    // let adjustment = rng.random_range(-1..=1);
-                    // let new_exp = random_input.exponent() + adjustment;
-                    // // Ensure exponent stays non-negative to avoid division by zero
-                    // if new_exp >= 0 {
-                    //     random_input.adjust_exp(adjustment);
-                    // }
                 }
             }
         }
@@ -645,21 +607,21 @@ fn make_simple_network() {
     let hidden_1 = arc(NeuronTopology::hidden(
         Uuid::new_v4(),
         vec![
-            PolyInputTopology::downgrade(&input, 3., 1),
-            PolyInputTopology::downgrade(&input, 1., 2),
+            PolyInput::downgrade(&input, 3., 1),
+            PolyInput::downgrade(&input, 1., 2),
         ],
     ));
 
     let hidden_2 = arc(NeuronTopology::hidden(
         Uuid::new_v4(),
-        vec![PolyInputTopology::downgrade(&input, 1., 2)],
+        vec![PolyInput::downgrade(&input, 1., 2)],
     ));
 
     let output = arc(NeuronTopology::output(
         Uuid::new_v4(),
         vec![
-            PolyInputTopology::downgrade(&hidden_1, 1., 1),
-            PolyInputTopology::downgrade(&hidden_2, 1., 1),
+            PolyInput::downgrade(&hidden_1, 1., 1),
+            PolyInput::downgrade(&hidden_2, 1., 1),
         ],
     ));
 
