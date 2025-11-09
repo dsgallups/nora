@@ -11,6 +11,7 @@ pub struct Brain {
     name: String,
     rng: StdRng,
     neurons: Vec<Neuron>,
+    state: BrainState,
 }
 
 impl Brain {
@@ -19,10 +20,13 @@ impl Brain {
             name: name.into(),
             rng: StdRng::seed_from_u64(12829231),
             neurons: Vec::new(),
+            state: BrainState::default(),
         }
     }
 
     pub fn sandbox() -> Self {
+        let mut state = BrainState::default();
+
         let mut neuron_1 = Neuron::new("N1");
         let mut neuron_2 = Neuron::new("N2");
         let mut neuron_3 = Neuron::new("N3");
@@ -31,6 +35,8 @@ impl Brain {
         neuron_2.tx_to(&mut neuron_1);
         neuron_1.tx_to(&mut neuron_3);
         _ = neuron_2.fire(1);
+
+        state.set_entry_point(&neuron_2);
 
         let mut brain = Brain::new("Brain");
 
@@ -67,7 +73,7 @@ impl Brain {
         self.neurons.retain(|neuron| !neuron.dendrites().is_empty());
 
         for neuron in &mut self.neurons {
-            neuron.dendrites.retain(|dendrite| !dendrite.is_dead());
+            neuron.dendrites.prune_the_dead();
         }
     }
 
@@ -89,9 +95,7 @@ impl Brain {
     }
 
     pub fn get_dendrite(&self, id: Uuid) -> Option<&Dendrite> {
-        self.neurons
-            .iter()
-            .find_map(|n| n.dendrites().iter().find(|d| d.id() == id))
+        self.neurons.iter().find_map(|n| n.dendrites().find(id))
     }
 
     pub fn add_neuron(&mut self) {

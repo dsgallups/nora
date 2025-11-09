@@ -87,7 +87,7 @@ fn spawn_new_nodes(
 
         let mut new_edges = Vec::new();
 
-        for dendrite in neuron.dendrites() {
+        for dendrite in neuron.dendrites().iter() {
             if map.get_entity(&dendrite.id()).is_none() {
                 let connected_to = dendrite.connected_to();
                 let Some(receives_from) = map.get_entity(&connected_to) else {

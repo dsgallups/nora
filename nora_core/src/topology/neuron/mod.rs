@@ -23,7 +23,7 @@ pub struct Neuron {
     axon: NeuronChannel,
     frame_potential: i32,
     sensitization: i32,
-    pub(super) dendrites: Vec<Dendrite>,
+    pub(super) dendrites: Dendrites,
 }
 impl fmt::Debug for Neuron {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
@@ -46,7 +46,7 @@ impl Neuron {
             frame_potential: 0,
             name,
             sensitization: 0,
-            dendrites: Vec::new(),
+            dendrites: Dendrites::default(),
         }
     }
     /// "To bring into"
@@ -66,12 +66,17 @@ impl Neuron {
         self.id
     }
 
-    pub fn dendrites(&self) -> &[Dendrite] {
+    pub fn dendrites(&self) -> &Dendrites {
         &self.dendrites
     }
 
     pub fn spawn_rx(&self) -> NeuronRx {
         self.axon.spawn_rx()
+    }
+
+    pub fn enqueue(&self) -> NeuronProcess {
+        //let dendrites = &raw mut self.dendrites;
+        todo!()
     }
 
     /// returns the potential for this frame.
