@@ -4,8 +4,8 @@ use std::fmt;
 
 pub use axon::*;
 
-mod dendrite;
-pub use dendrite::*;
+mod input;
+pub use input::*;
 
 mod soma;
 pub use soma::*;
@@ -23,7 +23,7 @@ pub struct Neuron {
     axon: NeuronChannel,
     frame_potential: i32,
     sensitization: i32,
-    pub(super) dendrites: Dendrites,
+    pub(super) dendrites: NeuronInput,
 }
 impl fmt::Debug for Neuron {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
@@ -46,7 +46,7 @@ impl Neuron {
             frame_potential: 0,
             name,
             sensitization: 0,
-            dendrites: Dendrites::default(),
+            dendrites: NeuronInput::default(),
         }
     }
     /// "To bring into"
@@ -66,7 +66,7 @@ impl Neuron {
         self.id
     }
 
-    pub fn dendrites(&self) -> &Dendrites {
+    pub fn dendrites(&self) -> &NeuronInput {
         &self.dendrites
     }
 

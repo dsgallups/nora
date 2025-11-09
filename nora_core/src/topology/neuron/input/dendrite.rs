@@ -1,40 +1,9 @@
 use std::fmt;
 
+use crate::prelude::*;
 use tracing::info;
 use trotcast::error::TryRecvError;
 use uuid::Uuid;
-
-use crate::prelude::{Neuron, NeuronRx};
-
-#[derive(Debug, Default)]
-pub struct Dendrites(Vec<Dendrite>);
-
-impl Dendrites {
-    pub fn push(&mut self, dendrite: Dendrite) {
-        self.0.push(dendrite)
-    }
-    pub fn swap_remove(&mut self, index: usize) -> Dendrite {
-        self.0.swap_remove(index)
-    }
-    pub fn iter(&self) -> impl Iterator<Item = &Dendrite> {
-        self.0.iter()
-    }
-    pub fn iter_mut(&mut self) -> impl Iterator<Item = &mut Dendrite> {
-        self.0.iter_mut()
-    }
-    pub fn len(&self) -> usize {
-        self.0.len()
-    }
-    pub fn is_empty(&self) -> bool {
-        self.0.is_empty()
-    }
-    pub fn prune_the_dead(&mut self) {
-        self.0.retain(|dendrite| !dendrite.is_dead())
-    }
-    pub fn find(&self, id: Uuid) -> Option<&Dendrite> {
-        self.0.iter().find(|d| d.id == id)
-    }
-}
 
 pub struct Dendrite {
     id: Uuid,
@@ -49,10 +18,6 @@ impl fmt::Debug for Dendrite {
             .finish()
     }
 }
-
-#[derive(Debug, Clone, Copy)]
-pub struct Disconnected;
-
 impl Dendrite {
     pub fn new(name: impl Into<String>, neuron: &Neuron) -> Self {
         Self {
