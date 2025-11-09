@@ -1,17 +1,23 @@
-use nora::prelude::*;
+pub mod brain;
+pub mod camera;
+pub mod ui;
+pub mod visual;
+pub mod widgets;
+
+use bevy::{prelude::*, window::WindowResolution};
+
 fn main() {
-    subscribe();
-    let mut neuron_1 = Neuron::new("N1");
-    let neuron_2 = Neuron::new("N2");
-    //let junction = ActionPotential::default();
+    let mut app = App::new();
 
-    neuron_2.tx_to(&mut neuron_1);
-    neuron_2.fire(1);
+    app.add_plugins(DefaultPlugins.set(WindowPlugin {
+        primary_window: Some(Window {
+            resolution: WindowResolution::new(1920, 1080),
+            ..default()
+        }),
+        ..default()
+    }));
 
-    let mut brain = Brain::new("Brain");
+    app.add_plugins((brain::plugin, visual::plugin, ui::plugin, camera::plugin));
 
-    brain.add(neuron_1);
-    brain.add(neuron_2);
-
-    brain.update();
+    app.run();
 }
