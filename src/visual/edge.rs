@@ -96,7 +96,7 @@ fn update_edge_transforms(
             let length = val.length();
             if length > 0. {
                 rectangle_trns.scale.x = length;
-                circle_trns.translation.x = length * 0.4;
+                circle_trns.translation.x = length * 0.5 - 5.;
             }
 
             transform.translation = sender_trns.translation + (Vec3::new(val.x, val.y, 0.) * 0.5);
