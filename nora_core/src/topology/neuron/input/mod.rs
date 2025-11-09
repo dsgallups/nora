@@ -54,6 +54,16 @@ impl Afference {
         }
     }
 }
+impl From<Dendrite> for Afference {
+    fn from(value: Dendrite) -> Self {
+        Self::Dendrite(value)
+    }
+}
+impl From<JunctionAffer> for Afference {
+    fn from(value: JunctionAffer) -> Self {
+        Self::Junction(value)
+    }
+}
 
 #[derive(Debug, Clone, Copy)]
 pub struct Disconnected;
