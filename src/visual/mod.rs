@@ -98,11 +98,22 @@ fn spawn_new_nodes(
                     .spawn((
                         GraphComponent,
                         Edge::new(dendrite.id(), *receives_from, neuron_e),
-                        Mesh2d(meshes.add(Rectangle::new(LINE_MESH_X, LINE_MESH_Y))),
-                        MeshMaterial2d(materials.add(Color::WHITE)),
                         Transform::from_xyz(0., 0., EDGE_LAYER),
                     ))
                     .id();
+
+                commands.spawn((
+                    EdgeRectangleOf(edge),
+                    Mesh2d(meshes.add(Rectangle::new(LINE_MESH_X, LINE_MESH_Y))),
+                    MeshMaterial2d(materials.add(Color::WHITE)),
+                    ChildOf(edge),
+                ));
+                commands.spawn((
+                    EdgeCircleOf(edge),
+                    Mesh2d(meshes.add(Circle::new(10.))),
+                    MeshMaterial2d(materials.add(Color::WHITE)),
+                    ChildOf(edge),
+                ));
 
                 map.insert(edge, dendrite.id());
 
